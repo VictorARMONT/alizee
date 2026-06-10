@@ -1,5 +1,3 @@
-"use client";
-
 export const metadata = {
   title: "Aviso de Privacidad | El Regalo Perfecto",
   description: "Aviso de Privacidad Integral conforme a la LFPDPPP.",

@@ -3,6 +3,7 @@ import { fetchShopifyCollection } from "@/lib/shopify";
 import { ProductCard } from "@/components/ProductCard";
 import { CountdownServer } from "@/components/CountdownServer";
 import { Logo } from "@/components/Logo";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const revalidate = 300; // revalida cada 5 min
 
@@ -49,19 +50,21 @@ export default async function HomePage() {
             className="absolute inset-0"
             style={{ background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.40) 50%, rgba(0,0,0,0.08) 100%)" }}
           />
-          <div className="relative z-10 px-6 pb-10 pt-20 flex flex-col gap-4">
+          <div className="relative z-10 px-6 pb-10 pt-20 flex flex-col gap-4 az-hero-stagger">
             <span
               className="self-start text-[11px] font-semibold uppercase tracking-[0.22em] px-3 py-1 rounded-full"
               style={{ background: "rgba(180,20,90,0.35)", color: "#fff" }}
             >
               Día del Padre · 21 de junio
             </span>
-            <h1 className="text-[38px] leading-[1.06] font-bold tracking-tight text-white">
+            <h1 className="text-[38px] leading-[1.06] font-bold tracking-tight text-white"
+              style={{ fontFamily: "var(--font-display, inherit)" }}
+            >
               El regalo que sí<br />
-              <span style={{ color: "#F9A8D4" }}>lo va a sorprender.</span>
+              <em className="az-em not-italic" style={{ color: "#F9A8D4" }}>lo va a sorprender.</em>
             </h1>
             <p className="text-[16px] leading-relaxed text-white/75 max-w-md">
-              Responde 6 preguntas sobre cómo es él. Nosotros armamos su box.
+              Responde 7 preguntas sobre cómo es él. Nosotros armamos su box.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mt-1">
               <Link
@@ -82,6 +85,7 @@ export default async function HomePage() {
         </section>
 
         {/* ── EDICIÓN LIMITADA — DÍA DEL PADRE ── */}
+        <ScrollReveal delay={100}>
         <section
           className="mx-5 mt-6 rounded-[var(--radius-lg)] overflow-hidden"
           style={{ background: "linear-gradient(135deg, #F97316 0%, #E91E8C 100%)" }}
@@ -110,8 +114,10 @@ export default async function HomePage() {
             </Link>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ── CATEGORÍAS ── */}
+        <ScrollReveal delay={80}>
         <section className="px-5 mt-10 flex flex-col gap-4">
           <SectionLabel>Categorías</SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -138,43 +144,48 @@ export default async function HomePage() {
             />
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ── JOYERÍA DESTACADA ── */}
         {joyeria.length > 0 && (
-          <section className="px-5 mt-10 flex flex-col gap-5">
-            <div className="flex items-end justify-between">
-              <div>
-                <SectionLabel>Joyería</SectionLabel>
-                <h2 className="text-[24px] font-bold tracking-tight leading-tight text-[var(--brand-fg)] mt-1">
-                  Lo más vendido.
-                </h2>
+          <ScrollReveal delay={60}>
+            <section className="px-5 mt-10 flex flex-col gap-5">
+              <div className="flex items-end justify-between">
+                <div>
+                  <SectionLabel>Joyería</SectionLabel>
+                  <h2 className="text-[24px] font-bold tracking-tight leading-tight text-[var(--brand-fg)] mt-1">
+                    Lo más vendido.
+                  </h2>
+                </div>
+                <Link
+                  href="/joyeria"
+                  className="text-[13px] font-medium shrink-0"
+                  style={{ color: "var(--brand-primary)" }}
+                >
+                  Ver todo →
+                </Link>
               </div>
-              <Link
-                href="/joyeria"
-                className="text-[13px] font-medium shrink-0"
-                style={{ color: "var(--brand-primary)" }}
-              >
-                Ver todo →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {joyeria.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          </section>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {joyeria.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            </section>
+          </ScrollReveal>
         )}
 
         {/* ── POR QUÉ ALIZEE ── */}
-        <section className="px-5 mt-10 flex flex-col gap-4">
-          <SectionLabel>Por qué ALIZEE</SectionLabel>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <TrustCard icon="✦" title="Personalización real" detail="No es una tarjeta genérica. Cada regalo responde a quién es la persona." />
-            <TrustCard icon="◈" title="Análisis de patrones" detail="Cruzamos 7 tipos de análisis para identificar el regalo exacto." />
-            <TrustCard icon="◉" title="Envío a todo México" detail="Empaque cuidado, entrega puntual. Listo para regalar." />
-            <TrustCard icon="◊" title="WhatsApp directo" detail="Sin formularios largos. Compra y resuelve dudas en un mensaje." />
-          </div>
-        </section>
+        <ScrollReveal delay={80}>
+          <section className="px-5 mt-10 flex flex-col gap-4">
+            <SectionLabel>Por qué ALIZEE</SectionLabel>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <TrustCard icon="✦" title="Personalización real" detail="No es una tarjeta genérica. Cada regalo responde a quién es la persona." />
+              <TrustCard icon="◈" title="Análisis de patrones" detail="Cruzamos 7 tipos de análisis para identificar el regalo exacto." />
+              <TrustCard icon="◉" title="Envío a todo México" detail="Empaque cuidado, entrega puntual. Listo para regalar." />
+              <TrustCard icon="◊" title="WhatsApp directo" detail="Sin formularios largos. Compra y resuelve dudas en un mensaje." />
+            </div>
+          </section>
+        </ScrollReveal>
 
       </main>
 

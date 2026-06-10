@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Reveal } from "@/components/Reveal";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { ARCHETYPES } from "@/data/archetypes";
 import { SIGN_INFO } from "@/data/zodiac";
 import { getChineseZodiac, getKinMaya, getSeason, getCapsulaTiempo } from "@/data/birthProfile";
@@ -216,7 +217,7 @@ export function DossierReveal({
         )}
 
         {/* ══ CAPA 1: NÚCLEO DE IDENTIDAD ══ */}
-        <DossierCard label="Núcleo de identidad">
+        <DossierCard label="Núcleo de identidad" delay={0}>
           <p className="text-[19px] leading-relaxed text-[var(--brand-fg)]">
             {arch.dossierLead}
           </p>
@@ -243,7 +244,7 @@ export function DossierReveal({
         </DossierCard>
 
         {/* ══ CAPA 2: MAPA DE SISTEMAS ══ */}
-        <DossierCard label="Mapa de sistemas">
+        <DossierCard label="Mapa de sistemas" delay={80}>
             <div className="grid grid-cols-2 gap-3">
               <NatalBadge glyph={ARCHETYPE_GLYPHS[archetypeKey]} label={arch.name} sublabel="Arquetipo" />
               {signInfo && (
@@ -391,7 +392,7 @@ export function DossierReveal({
 
         {/* ══ CAPA 3: NAHUAL / CHOLQ'IJ (solo si hay fecha) ══ */}
         {nahual && (
-          <DossierCard label={`Nahual ${nahual.name} · Cholq'ij`}>
+          <DossierCard label={`Nahual ${nahual.name} · Cholq'ij`} delay={60}>
             <div className="flex items-start gap-3">
               <span className="text-[32px] leading-none shrink-0">{nahual.symbol}</span>
               <div className="flex flex-col gap-1">
@@ -444,7 +445,7 @@ export function DossierReveal({
 
         {/* ══ CAPA 5: CONTEXTO DE ÉPOCA (solo si hay fecha) ══ */}
         {(generation || season || capsula) && (
-          <DossierCard label="Contexto de época">
+          <DossierCard label="Contexto de época" delay={60}>
             {(generation || season) && (
               <div className="grid grid-cols-2 gap-3">
                 {generation && (
@@ -489,7 +490,7 @@ export function DossierReveal({
         )}
 
         {/* ══ CAPA 6: CÓMO OPERA EN EL MUNDO ══ */}
-        <DossierCard label="Cómo opera en el mundo">
+        <DossierCard label="Cómo opera en el mundo" delay={60}>
           <div className="flex flex-col gap-4">
             {ARCHETYPE_ACTIONS[archetypeKey].map((item) => (
               <div key={item.title} className="flex gap-3 items-start">
@@ -528,7 +529,12 @@ export function DossierReveal({
                 <p
                   key={i}
                   className="leading-relaxed text-[var(--brand-fg)]"
-                  style={{ fontSize: i === 0 ? "16px" : "14px", fontStyle: i === 1 ? "italic" : "normal", opacity: i === 2 ? 0.8 : 1 }}
+                  style={{
+                    fontSize: i === 0 ? "17px" : "14px",
+                    fontStyle: i === 1 ? "italic" : "normal",
+                    fontFamily: i <= 1 ? "var(--font-display, inherit)" : undefined,
+                    opacity: i === 2 ? 0.8 : 1,
+                  }}
                 >
                   {line}
                 </p>
@@ -567,14 +573,24 @@ export function DossierReveal({
 
 /* ── Sub-componentes ── */
 
-function DossierCard({ label, children }: { label: string; children: React.ReactNode }) {
+function DossierCard({
+  label,
+  children,
+  delay = 0,
+}: {
+  label: string;
+  children: React.ReactNode;
+  delay?: number;
+}) {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6 flex flex-col gap-4">
-      <p className="text-[11px] uppercase tracking-[0.24em] font-semibold" style={{ color: "var(--brand-primary)" }}>
-        {label}
-      </p>
-      {children}
-    </div>
+    <ScrollReveal delay={delay}>
+      <div className="rounded-[var(--radius-lg)] border border-[var(--brand-border)] bg-[var(--brand-surface)] p-6 flex flex-col gap-4">
+        <p className="text-[11px] uppercase tracking-[0.24em] font-semibold" style={{ color: "var(--brand-primary)" }}>
+          {label}
+        </p>
+        {children}
+      </div>
+    </ScrollReveal>
   );
 }
 

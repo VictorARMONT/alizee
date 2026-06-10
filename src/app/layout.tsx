@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { ProductSchemaScript } from "@/components/ProductSchema";
+import { BackgroundLayers } from "@/components/BackgroundLayers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,6 +13,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: "variable",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -66,7 +75,7 @@ export default function RootLayout({
   return (
     <html
       lang="es-MX"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <head>
         {/* Schema JSON-LD */}
@@ -93,7 +102,8 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <div className="flex-1">{children}</div>
+        <BackgroundLayers />
+        <div className="flex-1 relative z-10">{children}</div>
         <Footer />
       </body>
     </html>

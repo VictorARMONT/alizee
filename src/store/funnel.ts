@@ -4,7 +4,7 @@
  */
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type { QuestionId, ArchetypeKey } from "@/data/questions";
 import { QUESTIONS, TOTAL_STEPS } from "@/data/questions";
 import { scoreArchetype } from "@/funnel/score";
@@ -93,7 +93,19 @@ export const useFunnel = create<FunnelState>()(
       ...initial,
 
   setAnswer: (id, key) =>
-    set((s) => ({ answers: { ...s.answers, [id]: key } })),
+    set((s) => {
+      const newAnswers = { ...s.answers, [id]: key };
+      if (id === "presupuesto") {
+        const tierMap: Record<string, number> = {
+          esencial: 0, ritual: 1, ceremonia: 2, legado: 3,
+        };
+        const tierIdx = tierMap[key];
+        if (tierIdx !== undefined) {
+          return { answers: newAnswers, selectedTierIdx: tierIdx };
+        }
+      }
+      return { answers: newAnswers };
+    }),
 
   setBirthDate: (iso) => set({ birthDate: iso }),
   setBirthTime: (t) => set({ birthTime: t }),
@@ -153,38 +165,16 @@ export const useFunnel = create<FunnelState>()(
     }),
     {
       name: "alizee-funnel",
-      storage: (() => {
-        if (typeof window === "undefined") {
-          return {
-            getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {},
-          };
+      storage: createJSONStorage(() =>
+        typeof window !== "undefined" ? sessionStorage : {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+          length: 0,
+          clear: () => {},
+          key: () => null,
         }
-        return {
-          getItem: (key: string) => {
-            try {
-              return sessionStorage.getItem(key);
-            } catch {
-              return null;
-            }
-          },
-          setItem: (key: string, value: string) => {
-            try {
-              sessionStorage.setItem(key, value);
-            } catch {
-              // Ignore quota exceeded
-            }
-          },
-          removeItem: (key: string) => {
-            try {
-              sessionStorage.removeItem(key);
-            } catch {
-              // Ignore errors
-            }
-          },
-        };
-      })(),
+      ),
     }
   )
 );

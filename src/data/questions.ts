@@ -8,6 +8,7 @@
  * Q5  valores       → kind: "single"    (Schwartz; tiebreaker de arquetipo)
  * Q6  mascotas      → kind: "single"    (cross-sell: escultura 3D perro / altar)
  * Q7  nacimiento    → kind: "datetime"  (opcional; desbloquea análisis astral)
+ * Q8  presupuesto   → kind: "single"    (rango de inversión → pre-selecciona tier del box)
  */
 
 export type ArchetypeKey = "lider" | "explorador" | "creador" | "sabio";
@@ -19,7 +20,8 @@ export type QuestionId =
   | "presion"
   | "valores"
   | "mascotas"
-  | "fechaNacimiento";
+  | "fechaNacimiento"
+  | "presupuesto";
 
 export interface Option {
   key: string;
@@ -44,7 +46,7 @@ export interface Question {
   skipLabel?: string;
 }
 
-const TOTAL = 7;
+const TOTAL = 8;
 
 export const QUESTIONS: Question[] = [
   /* ── Q1: RELACIÓN ── */
@@ -53,7 +55,7 @@ export const QUESTIONS: Question[] = [
     kind: "single",
     index: 1,
     total: TOTAL,
-    kicker: "Paso 1 de 7",
+    kicker: "Paso 1 de 8",
     prompt: "¿Para quién es el regalo?",
     options: [
       { key: "papa",   label: "Mi papá",            glyph: "◆" },
@@ -70,7 +72,7 @@ export const QUESTIONS: Question[] = [
     kind: "image",
     index: 2,
     total: TOTAL,
-    kicker: "Paso 2 de 7",
+    kicker: "Paso 2 de 8",
     prompt: "¿Cuál de estas imágenes lo describe mejor en su elemento?",
     options: [
       {
@@ -106,7 +108,7 @@ export const QUESTIONS: Question[] = [
     kind: "single",
     index: 3,
     total: TOTAL,
-    kicker: "Paso 3 de 7",
+    kicker: "Paso 3 de 8",
     prompt: "Cuando tiene que tomar una decisión importante, ¿cómo la toma?",
     subtext: "Piensa en cómo actúa, no en cómo le gustaría actuar.",
     options: [
@@ -127,7 +129,7 @@ export const QUESTIONS: Question[] = [
     kind: "single",
     index: 4,
     total: TOTAL,
-    kicker: "Paso 4 de 7",
+    kicker: "Paso 4 de 8",
     prompt: "Cuando algo sale mal, su primera reacción es…",
     options: [
       { key: "control",     archetype: "lider",
@@ -147,7 +149,7 @@ export const QUESTIONS: Question[] = [
     kind: "single",
     index: 5,
     total: TOTAL,
-    kicker: "Paso 5 de 7",
+    kicker: "Paso 5 de 8",
     prompt: "¿Qué es lo que más valora en las personas que lo rodean?",
     options: [
       { key: "lealtad",     archetype: "lider",
@@ -167,7 +169,7 @@ export const QUESTIONS: Question[] = [
     kind: "single",
     index: 6,
     total: TOTAL,
-    kicker: "Paso 6 de 7",
+    kicker: "Paso 6 de 8",
     prompt: "¿Tiene animales en casa?",
     subtext: "Nos ayuda a personalizar algunas piezas del box.",
     options: [
@@ -184,10 +186,27 @@ export const QUESTIONS: Question[] = [
     kind: "datetime",
     index: 7,
     total: TOTAL,
-    kicker: "Paso 7 de 7",
+    kicker: "Paso 7 de 8",
     prompt: "¿Conoces su fecha y hora de nacimiento?",
     subtext: "Desbloquea el análisis astral completo de tu paquete.",
     skipLabel: "No la sé / Prefiero saltar",
+  },
+
+  /* ── Q8: PRESUPUESTO → pre-selecciona tier del box ── */
+  {
+    id: "presupuesto",
+    kind: "single",
+    index: 8,
+    total: TOTAL,
+    kicker: "Paso 8 de 8",
+    prompt: "¿Cuánto quieres invertir en su regalo?",
+    subtext: "Te mostramos las opciones que tienen más sentido para tu presupuesto.",
+    options: [
+      { key: "esencial",  glyph: "◇", label: "Algo con intención — hasta $600" },
+      { key: "ritual",    glyph: "◆", label: "Un regalo con peso — hasta $900" },
+      { key: "ceremonia", glyph: "✦", label: "Que sea memorable — hasta $2,000" },
+      { key: "legado",    glyph: "★", label: "El regalo de su vida — sin límite" },
+    ],
   },
 ];
 

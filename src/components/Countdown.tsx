@@ -47,9 +47,12 @@ export function Countdown({ onDark = false }: { onDark?: boolean }) {
 
   if (!t) {
     return (
-      <span className="text-[10px] uppercase tracking-[0.22em]" style={mutedStyle}>
-        Pedidos hasta 15 jun
-      </span>
+      <div className="inline-flex items-center gap-2">
+        <span className="az-pulse-dot" aria-hidden />
+        <span className="text-[10px] uppercase tracking-[0.22em]" style={mutedStyle}>
+          Pedidos hasta 17 jun
+        </span>
+      </div>
     );
   }
 
@@ -72,9 +75,12 @@ export function Countdown({ onDark = false }: { onDark?: boolean }) {
       className="inline-flex flex-col items-center gap-1 rounded-[var(--radius-md)] px-4 py-2"
       style={borderStyle}
     >
-      <span className="text-[9px] uppercase tracking-[0.22em]" style={mutedStyle}>
-        Cierra en
-      </span>
+      <div className="flex items-center gap-1.5">
+        <span className="az-pulse-dot" aria-hidden />
+        <span className="text-[9px] uppercase tracking-[0.22em]" style={mutedStyle}>
+          Cierra en
+        </span>
+      </div>
       <div className="flex items-end gap-2 tabular-nums">
         <ClockUnit value={t.days} label="días" numColor={numColor} />
         <Sep color={sepColor} />

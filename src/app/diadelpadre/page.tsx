@@ -129,6 +129,7 @@ export default function ArmarPage() {
       answers.presion      && `• Bajo presión    → ${getLabel("presion",      answers.presion)}`,
       answers.valores      && `• Valora en otros → ${getLabel("valores",      answers.valores)}`,
       answers.mascotas     && `• Animales        → ${getLabel("mascotas",     answers.mascotas)}`,
+      answers.presupuesto  && `• Presupuesto     → ${getLabel("presupuesto",  answers.presupuesto)}`,
     ].filter(Boolean).join("\n");
 
     const sistemaLines = [
