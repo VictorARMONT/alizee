@@ -24,7 +24,7 @@ export type AnalyticsEvent =
   | { name: "ViewRecommendation"; archetype: ArchetypeKey; hasSunSign: boolean }
   | { name: "ConfiguratorComplete"; archetype: ArchetypeKey; anclaLabel: string; complementoLabel: string }
   | { name: "AddToCart"; archetype: ArchetypeKey; total: number; upgrades: string[] }
-  | { name: "Purchase"; archetype: ArchetypeKey; total: number; upgrades: string[] };
+  | { name: "InitiateCheckout"; archetype: ArchetypeKey; total: number; upgrades: string[] };
 
 /* ------------------------------------------------------------------ */
 /*  Dispatcher                                                          */
@@ -101,7 +101,7 @@ export const analytics = {
     dispatch({ name: "AddToCart", archetype, total, upgrades });
   },
 
-  purchase(archetype: ArchetypeKey, total: number, upgrades: string[]) {
-    dispatch({ name: "Purchase", archetype, total, upgrades });
+  initiateCheckout(archetype: ArchetypeKey, total: number, upgrades: string[]) {
+    dispatch({ name: "InitiateCheckout", archetype, total, upgrades });
   },
 };

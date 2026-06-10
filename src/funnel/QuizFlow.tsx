@@ -7,7 +7,6 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { Logo } from "@/components/Logo";
 import { OptionCard } from "@/components/OptionCard";
 import { ImageOptionCard } from "@/components/ImageOptionCard";
-import { DateInput } from "@/components/DateInput";
 import { DateTimeInput } from "@/components/DateTimeInput";
 import { TOTAL_STEPS } from "@/data/questions";
 import { BOX_TIERS } from "@/data/pricing";
@@ -139,17 +138,6 @@ export function QuizFlow() {
             </ul>
           )}
 
-          {/* Fecha de nacimiento (legacy kind) */}
-          {question.kind === "date" && (
-            <DateInput
-              value={birthDate}
-              onChange={(iso) => setBirthDate(iso)}
-              onSubmit={() => next()}
-              onSkip={() => { setBirthDate(null); next(); }}
-              skipLabel={question.skipLabel ?? "Saltar"}
-            />
-          )}
-
           {/* Fecha + Hora de nacimiento */}
           {question.kind === "datetime" && (
             <DateTimeInput
@@ -174,7 +162,7 @@ export function QuizFlow() {
               style={{
                 touchAction: "manipulation",
                 background: hasAnswer
-                  ? "linear-gradient(90deg, #F97316 0%, #E91E8C 100%)"
+                  ? "var(--brand-gradient)"
                   : "var(--brand-border)",
               }}
               className={[

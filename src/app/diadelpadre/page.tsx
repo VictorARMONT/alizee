@@ -189,9 +189,8 @@ export default function ArmarPage() {
     const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "523349571689";
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 
-    analytics.purchase(archetypeKey!, total, activeUpgrades);
-    window.open(waUrl, "_blank", "noopener,noreferrer");
-    router.push("/gracias");
+    analytics.initiateCheckout(archetypeKey!, total, activeUpgrades);
+    window.location.href = waUrl;
   }
 
   const subStep = flowIdx + 1;

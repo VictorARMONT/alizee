@@ -15,6 +15,7 @@
   --brand-primary-fg:  #ffffff;
   --brand-accent:      #F97316;   /* naranja */
   --brand-success:     #10B981;
+  --brand-gradient:    linear-gradient(90deg, #F97316 0%, #E91E8C 100%);
 
   /* Tipografía */
   --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;

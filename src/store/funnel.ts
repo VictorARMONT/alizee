@@ -4,6 +4,7 @@
  */
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { QuestionId, ArchetypeKey } from "@/data/questions";
 import { QUESTIONS, TOTAL_STEPS } from "@/data/questions";
 import { scoreArchetype } from "@/funnel/score";
@@ -81,8 +82,10 @@ const initial = {
   email: null as string | null,
 };
 
-export const useFunnel = create<FunnelState>((set, get) => ({
-  ...initial,
+export const useFunnel = create<FunnelState>()(
+  persist(
+    (set, get) => ({
+      ...initial,
 
   setAnswer: (id, key) =>
     set((s) => ({ answers: { ...s.answers, [id]: key } })),
@@ -140,7 +143,44 @@ export const useFunnel = create<FunnelState>((set, get) => ({
   },
 
   getTotal: () => BOX_TIERS[get().selectedTierIdx].priceMXN + get().getUpgradesTotal(),
-}));
+    }),
+    {
+      name: "alizee-funnel",
+      storage: (() => {
+        if (typeof window === "undefined") {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        }
+        return {
+          getItem: (key: string) => {
+            try {
+              return sessionStorage.getItem(key);
+            } catch {
+              return null;
+            }
+          },
+          setItem: (key: string, value: string) => {
+            try {
+              sessionStorage.setItem(key, value);
+            } catch {
+              // Ignore quota exceeded
+            }
+          },
+          removeItem: (key: string) => {
+            try {
+              sessionStorage.removeItem(key);
+            } catch {
+              // Ignore errors
+            }
+          },
+        };
+      })(),
+    }
+  )
+);
 
 export function useCurrentQuestion() {
   const step = useFunnel((s) => s.step);
