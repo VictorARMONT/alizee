@@ -7,9 +7,14 @@ import { Icon } from "@/components/Icon";
 interface CrossSellSlotProps {
   selected: Record<string, boolean>;
   onToggle: (id: string) => void;
+  mascota?: string;
 }
 
-export function CrossSellSlot({ selected, onToggle }: CrossSellSlotProps) {
+export function CrossSellSlot({ selected, onToggle, mascota = "no" }: CrossSellSlotProps) {
+  const visibleUpgrades = UPGRADES.filter(
+    (u) => !u.showWhenMascota || u.showWhenMascota.includes(mascota)
+  );
+
   return (
     <div className="flex flex-col gap-5">
       <div>
@@ -22,7 +27,7 @@ export function CrossSellSlot({ selected, onToggle }: CrossSellSlotProps) {
       </div>
 
       <ul className="flex flex-col gap-3">
-        {UPGRADES.map((u) => {
+        {visibleUpgrades.map((u) => {
           const on = !!selected[u.id];
           return (
             <li key={u.id}>

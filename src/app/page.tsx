@@ -61,7 +61,7 @@ export default async function HomePage() {
               <span style={{ color: "#F9A8D4" }}>lo va a sorprender.</span>
             </h1>
             <p className="text-[16px] leading-relaxed text-white/75 max-w-md">
-              Responde 10 preguntas sobre cómo es él. Nosotros armamos su box.
+              Responde 6 preguntas sobre cómo es él. Nosotros armamos su box.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mt-1">
               <Link

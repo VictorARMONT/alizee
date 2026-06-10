@@ -1,8 +1,5 @@
 "use client";
 
-// No indexar resultado/configurador
-export const metadata = { robots: { index: false, follow: false } };
-
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -107,11 +104,12 @@ export default function ArmarPage() {
       lider: "Águila Real", explorador: "Lobo Gris", creador: "Jaguar", sabio: "Búho Cornudo",
     };
     const animalPoder = archetypeKey ? (ARCHETYPE_ANIMALS[archetypeKey] ?? "—") : "—";
-    const mascota = answers.mascotas ?? "";
-    const tienePerro = mascota === "perrijo" || mascota === "los-dos";
-    const piezaNote = tienePerro
-      ? `⚠️ ELEGIR: Huella de perro O ${animalPoder} (ver Q9)`
-      : animalPoder;
+    const piezaNote = animalPoder;
+
+    /* señal cross-sell: escultura 3D perro / altar Día de Muertos */
+    const mascotaAnswer = answers.mascotas ?? "no";
+    const tienePerro = mascotaAnswer === "perro" || mascotaAnswer === "varios";
+    const leGustandAnimales = mascotaAnswer !== "no";
 
     const chinese = birthDate ? getChineseZodiac(birthDate) : null;
     const kinMaya  = birthDate ? getKinMaya(birthDate)       : null;
@@ -125,16 +123,12 @@ export default function ArmarPage() {
     }
 
     const quizLines = [
-      answers.relationship  && `• ¿Para quién?  → ${getLabel("relationship",  answers.relationship)}`,
-      answers.proyeccion    && `• Proyección    → ${getLabel("proyeccion",     answers.proyeccion)}`,
-      answers.espacio       && `• Espacio ideal → ${getLabel("espacio",        answers.espacio)}`,
-      answers.decision      && `• Decisiones    → ${getLabel("decision",       answers.decision)}`,
-      answers.presion       && `• Bajo presión  → ${getLabel("presion",        answers.presion)}`,
-      answers.valores       && `• Valora en otros → ${getLabel("valores",      answers.valores)}`,
-      answers.material      && `• Material      → ${getLabel("material",       answers.material)}`,
-      answers.recarga       && `• Recarga       → ${getLabel("recarga",        answers.recarga)}`,
-      answers.mascotas      && `• Mascota       → ${getLabel("mascotas",       answers.mascotas)}`,
-      answers.describe      && `• Una palabra   → ${getLabel("describe",       answers.describe)} (tiebreaker)`,
+      answers.relationship && `• ¿Para quién?    → ${getLabel("relationship", answers.relationship)}`,
+      answers.proyeccion   && `• Proyección      → ${getLabel("proyeccion",   answers.proyeccion)}`,
+      answers.decision     && `• Decisiones      → ${getLabel("decision",     answers.decision)}`,
+      answers.presion      && `• Bajo presión    → ${getLabel("presion",      answers.presion)}`,
+      answers.valores      && `• Valora en otros → ${getLabel("valores",      answers.valores)}`,
+      answers.mascotas     && `• Animales        → ${getLabel("mascotas",     answers.mascotas)}`,
     ].filter(Boolean).join("\n");
 
     const sistemaLines = [

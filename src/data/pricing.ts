@@ -75,15 +75,18 @@ export interface Upgrade {
   label: string;
   detail?: string;
   priceMXN: number;
+  /** si está definido, solo mostrar cuando answers.mascotas sea uno de estos valores */
+  showWhenMascota?: string[];
   /** estado por defecto al cargar el cross-sell */
   defaultSelected?: boolean;
 }
 
 /**
- * Cross-sell estable (copy-padre.md + addendum). Precios:
+ * Cross-sell. Precios:
  *  - grabado +250 [CONFIRMAR]
  *  - empaque premium +150 [CONFIRMAR]
- *  - vela extra [CONFIRMAR — usamos 200 como placeholder visible]
+ *  - vela extra +200 [CONFIRMAR]
+ *  - escultura perro +350 [CONFIRMAR] — solo se muestra si answers.mascotas = perro | varios
  */
 export const UPGRADES: Upgrade[] = [
   {
@@ -103,6 +106,13 @@ export const UPGRADES: Upgrade[] = [
     label: "Vela de copal extra",
     detail: "Una segunda vela para el ritual mensual.",
     priceMXN: 200, // [CONFIRMAR]
+  },
+  {
+    id: "esculturaPerro",
+    label: "Escultura 3D de su perro",
+    detail: "Pieza impresa en 3D con la raza de su perro. Envía foto al confirmar.",
+    priceMXN: 350, // [CONFIRMAR]
+    showWhenMascota: ["perro", "varios"],
   },
 ];
 

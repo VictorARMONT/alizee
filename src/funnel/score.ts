@@ -1,8 +1,8 @@
 /**
- * Scoring de arquetipo (copy-padre.md sección C).
+ * Scoring de arquetipo.
  *
  * - 1 punto por opción de Q2-Q5 cuyo `archetype` coincide.
- * - Desempate: gana la respuesta de Q5 (TIEBREAKER_QUESTION_ID).
+ * - Desempate: gana la respuesta de Q5/valores (TIEBREAKER_QUESTION_ID).
  * - Si no hay ninguna respuesta válida, devolvemos null.
  *
  * Pura, sin side-effects → fácil de testear y de mover si llega backend.
