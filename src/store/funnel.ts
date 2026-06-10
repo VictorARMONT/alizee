@@ -41,11 +41,15 @@ interface FunnelState {
   /** email capturado en checkout */
   email: string | null;
 
+  /** aceptación de aviso de privacidad */
+  privacyAccepted: boolean;
+
   /* --- acciones --- */
   setAnswer: (id: QuestionId, key: string) => void;
   setBirthDate: (iso: string | null) => void;
   setBirthTime: (t: string | null) => void;
   setEmail: (email: string) => void;
+  setPrivacyAccepted: (accepted: boolean) => void;
   next: () => void;
   prev: () => void;
 
@@ -80,6 +84,7 @@ const initial = {
   selectedTierIdx: DEFAULT_TIER_IDX,
   upgrades: {} as Record<string, boolean>,
   email: null as string | null,
+  privacyAccepted: false as boolean,
 };
 
 export const useFunnel = create<FunnelState>()(
@@ -94,6 +99,8 @@ export const useFunnel = create<FunnelState>()(
   setBirthTime: (t) => set({ birthTime: t }),
 
   setEmail: (email) => set({ email }),
+
+  setPrivacyAccepted: (accepted) => set({ privacyAccepted: accepted }),
 
   next: () => set((s) => ({ step: Math.min(TOTAL_STEPS, s.step + 1) })),
   prev: () => set((s) => ({ step: Math.max(0, s.step - 1) })),
