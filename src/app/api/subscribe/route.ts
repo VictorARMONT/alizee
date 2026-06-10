@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validateEmail } from "@/lib/validators";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY ?? "";
 const BREVO_LIST_ID = Number(process.env.BREVO_LIST_ID ?? "0");
@@ -8,16 +10,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
+  // Rate limit: 10 intentos por IP cada 1 minuto
+  const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+  const { allowed, remaining } = checkRateLimit(ip, 10, 60 * 1000);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "rate_limit_exceeded" },
+      { status: 429, headers: { "Retry-After": "60" } }
+    );
+  }
+
   let email: string;
   try {
     const body = await req.json() as { email?: string };
-    email = (body.email ?? "").trim().toLowerCase();
-  } catch {
-    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: "invalid_email" }, { status: 400 });
+    email = validateEmail(body.email);
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : "invalid_email";
+    return NextResponse.json({ error: errorMsg }, { status: 400 });
   }
 
   try {
