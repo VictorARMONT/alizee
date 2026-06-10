@@ -45,75 +45,21 @@ export function QuizFlow() {
     }
   }, [question, router, getArchetype, getRelationship, birthDate]);
 
-  // Mostrar checkbox privacidad si no ha sido aceptado
+  // Fallback: si llegan a /quiz directo sin aceptar privacidad → regresa al inicio
   if (!privacyAccepted) {
     return (
-      <div className="flex min-h-[100dvh] flex-col px-5 pt-6 pb-8">
-        <header className="mx-auto w-full max-w-md mb-8">
-          <Logo height={18} href="/" />
-        </header>
-
-        <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-8">
-          <div className="flex flex-col gap-6">
-            <h1 className="text-[36px] font-semibold leading-tight tracking-tight text-[var(--brand-fg)]">
-              Un momento
-            </h1>
-
-            <p className="text-[17px] leading-relaxed text-[var(--brand-fg-muted)]">
-              Antes de continuar, necesitamos que conozcas y aceptes nuestro aviso de privacidad.
-              Tus datos (y los del festejado) se usan solo para personalizar su regalo.
-            </p>
-
-            <div className="rounded-[var(--radius-md)] border border-[var(--brand-border)] p-4 bg-[var(--brand-surface-alt)]">
-              <p className="text-sm text-[var(--brand-fg)]">
-                Leemos datos de nacimiento, nombre y respuestas del cuestionario para hacer el análisis.
-                Los guardamos 90 días tras la entrega, luego los borramos.
-              </p>
-              <p className="text-xs text-[var(--brand-fg-muted)] mt-3">
-                <a href="/aviso-de-privacidad" className="text-[var(--brand-primary)] hover:underline">
-                  Leer aviso completo →
-                </a>
-              </p>
-            </div>
-
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={privacyAccepted}
-                onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                className="mt-1.5 w-5 h-5 accent-[var(--brand-primary)]"
-                style={{ touchAction: "manipulation" }}
-              />
-              <span className="text-sm text-[var(--brand-fg)]">
-                He leído y acepto el Aviso de Privacidad. Declaro contar con el consentimiento
-                de la persona festejada para compartir sus datos.
-              </span>
-            </label>
-
-            <button
-              type="button"
-              disabled={!privacyAccepted}
-              onClick={() => analytics.startQuiz()}
-              style={{
-                touchAction: "manipulation",
-                background: privacyAccepted
-                  ? "var(--brand-gradient)"
-                  : "var(--brand-border)",
-              }}
-              className={[
-                "w-full min-h-[58px] rounded-full",
-                "text-base font-semibold select-none",
-                "transition-opacity duration-200",
-                "focus-visible:outline-2 focus-visible:outline-[var(--brand-primary)] focus-visible:outline-offset-2",
-                privacyAccepted
-                  ? "text-white cursor-pointer"
-                  : "text-[var(--brand-fg-muted)] opacity-50 cursor-not-allowed",
-              ].join(" ")}
-            >
-              {privacyAccepted ? "Empezar →" : "Acepta para continuar"}
-            </button>
-          </div>
-        </main>
+      <div className="flex min-h-[100dvh] flex-col items-center justify-center px-5 gap-6">
+        <Logo height={24} href="/" />
+        <p className="text-[16px] text-center text-[var(--brand-fg-muted)] max-w-sm leading-relaxed">
+          Acepta el aviso de privacidad en la página principal para continuar.
+        </p>
+        <a
+          href="/"
+          className="min-h-[52px] px-8 rounded-full text-white text-[15px] font-semibold flex items-center"
+          style={{ background: "var(--brand-gradient)" }}
+        >
+          Ir al inicio →
+        </a>
       </div>
     );
   }

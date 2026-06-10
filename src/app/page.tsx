@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { CountdownServer } from "@/components/CountdownServer";
 import { Logo } from "@/components/Logo";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { PrivacyBanner } from "@/components/PrivacyBanner";
 
 export const revalidate = 300; // revalida cada 5 min
 
@@ -83,6 +84,9 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* ── AVISO DE PRIVACIDAD INLINE ── */}
+        <PrivacyBanner />
 
         {/* ── EDICIÓN LIMITADA — DÍA DEL PADRE ── */}
         <ScrollReveal delay={100}>
