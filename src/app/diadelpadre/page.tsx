@@ -1,5 +1,8 @@
 "use client";
 
+// No indexar resultado/configurador
+export const metadata = { robots: { index: false, follow: false } };
+
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
