@@ -21,11 +21,12 @@ const PLACEHOLDER_GLYPH: Record<ArchetypeKey, string> = {
 interface ImageOptionCardProps {
   option: Option;
   selected: boolean;
+  blinking?: boolean;
   disabled?: boolean;
   onSelect: (key: string) => void;
 }
 
-export function ImageOptionCard({ option, selected, disabled, onSelect }: ImageOptionCardProps) {
+export function ImageOptionCard({ option, selected, blinking, disabled, onSelect }: ImageOptionCardProps) {
   const archetype = option.archetype as ArchetypeKey | undefined;
   const gradient  = archetype ? PLACEHOLDER_GRADIENTS[archetype] : PLACEHOLDER_GRADIENTS.sabio;
   const glyph     = archetype ? PLACEHOLDER_GLYPH[archetype]     : "◈";
@@ -42,6 +43,7 @@ export function ImageOptionCard({ option, selected, disabled, onSelect }: ImageO
         "transition-[border-color] duration-150",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "focus-visible:outline-2 focus-visible:outline-[var(--brand-primary)] focus-visible:outline-offset-2",
+        blinking ? "az-option-blink" : "",
         selected
           ? "border-[var(--brand-primary)] ring-2 ring-[var(--brand-primary)]"
           : "border-[var(--brand-border)]",
@@ -73,9 +75,7 @@ export function ImageOptionCard({ option, selected, disabled, onSelect }: ImageO
         )}
 
         {selected && (
-          <div className="absolute inset-0 bg-[var(--brand-primary)]/40 flex items-center justify-center">
-            <span className="text-3xl font-bold text-white">✓</span>
-          </div>
+          <div className="absolute inset-0" style={{ background: "rgba(233,30,140,0.28)" }} />
         )}
       </div>
 

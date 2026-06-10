@@ -89,6 +89,15 @@
   to   { transform: scaleX(1); }
 }
 
+@keyframes az-option-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+.az-option-blink {
+  animation: az-option-blink 150ms ease-in-out 3 forwards;
+  pointer-events: none;
+}
+
 @keyframes az-sparkle {
   0%, 100% { transform: scale(0) rotate(0deg);   opacity: 0; }
   40%       { transform: scale(1) rotate(20deg);  opacity: 1; }

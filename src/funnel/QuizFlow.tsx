@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ProgressBar } from "@/components/ProgressBar";
@@ -31,6 +31,12 @@ export function QuizFlow() {
   const getRelationship = useFunnel((s) => s.getRelationship);
   const privacyAccepted = useFunnel((s) => s.privacyAccepted);
   const setPrivacyAccepted = useFunnel((s) => s.setPrivacyAccepted);
+
+  const [advancingKey, setAdvancingKey] = useState<string | null>(null);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* Limpia el timer si el componente se desmonta */
+  useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
 
   useEffect(() => {
     if (!question) {
@@ -119,10 +125,17 @@ export function QuizFlow() {
   const tier = BOX_TIERS[selectedTierIdx];
 
   const handleSelect = (questionId: Parameters<typeof setAnswer>[0], key: string) => {
+    if (advancingKey) return; // evita doble-tap durante blink
     if (Object.keys(answers).length === 0) analytics.startQuiz();
     const opt = question?.options?.find((o) => o.key === key);
     analytics.answerQuestion(step, questionId, key, opt?.archetype);
     setAnswer(questionId, key);
+    setAdvancingKey(key);
+    /* 3 parpadeos × 150ms = 450ms + buffer 60ms */
+    advanceTimer.current = setTimeout(() => {
+      setAdvancingKey(null);
+      next();
+    }, 510);
   };
 
   const handleContinue = () => {
@@ -191,6 +204,7 @@ export function QuizFlow() {
                   <OptionCard
                     option={opt}
                     selected={answers[question.id] === opt.key}
+                    blinking={advancingKey === opt.key}
                     onSelect={(key) => handleSelect(question.id, key)}
                   />
                 </li>
@@ -206,6 +220,7 @@ export function QuizFlow() {
                   <ImageOptionCard
                     option={opt}
                     selected={answers[question.id] === opt.key}
+                    blinking={advancingKey === opt.key}
                     onSelect={(key) => handleSelect(question.id, key)}
                   />
                 </li>
@@ -228,31 +243,7 @@ export function QuizFlow() {
             />
           )}
 
-          {/* CTA: visible siempre, se activa al seleccionar */}
-          {question.kind !== "date" && question.kind !== "datetime" && (
-            <button
-              type="button"
-              disabled={!hasAnswer}
-              onClick={handleContinue}
-              style={{
-                touchAction: "manipulation",
-                background: hasAnswer
-                  ? "var(--brand-gradient)"
-                  : "var(--brand-border)",
-              }}
-              className={[
-                "w-full min-h-[58px] rounded-full",
-                "text-base font-semibold select-none",
-                "transition-opacity duration-200",
-                "focus-visible:outline-2 focus-visible:outline-[var(--brand-primary)] focus-visible:outline-offset-2",
-                hasAnswer
-                  ? "text-white cursor-pointer"
-                  : "text-[var(--brand-fg-muted)] opacity-50 cursor-not-allowed",
-              ].join(" ")}
-            >
-              {hasAnswer ? "Continuar →" : "Elige una opción"}
-            </button>
-          )}
+          {/* Sin CTA en single/image — auto-avance via blink */}
 
         </div>
       </main>
