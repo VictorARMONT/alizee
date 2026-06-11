@@ -107,11 +107,9 @@ export function QuizFlow() {
         */}
         <div key={`q-${question.id}`} className="quiz-question flex flex-col gap-6">
 
-          {question.kicker && (
-            <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--brand-primary)]">
-              {question.kicker}
-            </p>
-          )}
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--brand-primary)]">
+            Paso {question.index} de {TOTAL_STEPS}
+          </p>
 
           <h1 className="text-[36px] font-semibold leading-tight tracking-tight text-[var(--brand-fg)]">
             {question.prompt}

@@ -24,10 +24,10 @@ Flujo del padre (orden de pantallas):
 1. **Portada / intro**  
    - Una sola propuesta de valor \+ un solo CTA primario ("Empezar").  
    - Mensaje corto y transparente de **cómo se usan los datos** (importante: pedimos fecha de nacimiento; decir para qué, arriba del fold). Protege confianza y conversión.  
-2. **Quiz: 5–6 preguntas máximo.** (Menos preguntas \= menos abandono. No exceder 6.)  
+2. **Quiz: hasta 11 preguntas** (decisión Victor, jun 2026 — antes el tope era 6). Regla viva: cada pregunta debe **alimentar el output** (arquetipo, dossier o producto); si una no cambia nada, va fuera. Las concretas y de baja fricción van primero; las opcionales (fecha/hora) al final y **siempre saltables**. Mantén el flujo ágil: auto-avance + barra de progreso.  
    - Q1 — ¿Para quién es? (papá / abuelo / esposo / suegro / figura paterna) → define relación.  
-   - Q2 — Rango de inversión / presupuesto **temprano**, para que el resultado se sienta realista.  
-   - Q3–Q5 — Personalidad/arquetipo con lenguaje **concreto y masculino**: líder, explorador, creador, clásico, etc. (NO lenguaje esotérico aquí todavía.)  
+   - Profesión — ¿A qué se dedica? → personaliza el dossier (y el producto, fase 2). Concreta, temprana, baja fricción.  
+   - Personalidad/arquetipo con lenguaje **concreto y masculino**: líder, explorador, creador, clásico, etc. (NO lenguaje esotérico aquí todavía.)  
    - Opcional — Fecha de nacimiento (solo signo solar). Enmarcado como "para desbloquear tu lectura personalizada". **NUNCA obligatorio. Nunca una barrera.**  
    - UI por pregunta: opción se ilumina/cambia color al seleccionar → activa botón → auto-avanza.  
 3. **Ancla de estilo** — pieza de piel o reloj según arquetipo. Al elegir, auto-avanza.  

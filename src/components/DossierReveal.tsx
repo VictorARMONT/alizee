@@ -13,6 +13,7 @@ import { AstrocartographySection } from "@/components/AstrocartographySection";
 import { getAffirmations } from "@/lib/affirmations";
 import { getArchetypeQuote } from "@/data/quotes";
 import { getTotemProfile, SIGN_ELEMENTS } from "@/data/totem";
+import { getProfesion } from "@/data/profesion";
 import type { ArchetypeKey } from "@/data/questions";
 import type { SunSign } from "@/data/zodiac";
 import type { Answers } from "@/store/funnel";
@@ -212,6 +213,7 @@ export function DossierReveal({
   const season       = birthDate ? getSeason(birthDate)          : null;
   const capsula      = birthDate ? getCapsulaTiempo(birthDate)   : null;
   const totemProfile = birthDate ? getTotemProfile(birthDate, answers, "sol") : null;
+  const profesion    = getProfesion(answers.profesion);
 
   const luckyNumbers = Array.from(
     new Set([
@@ -276,6 +278,19 @@ export function DossierReveal({
               <p className="text-[13px] font-semibold text-[var(--brand-fg)]">{ARCHETYPE_ANIMALS[archetypeKey]}</p>
             </div>
           </div>
+
+          {/* Lente profesional — personaliza según a qué se dedica */}
+          {profesion && (
+            <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--brand-border)] bg-[var(--brand-bg)] px-3 py-3">
+              <span className="text-[18px] shrink-0 leading-none mt-0.5">{profesion.emoji}</span>
+              <div className="flex flex-col gap-1">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--brand-fg-muted)]">
+                  Su mundo · {profesion.label}
+                </p>
+                <p className="text-[13px] leading-relaxed text-[var(--brand-fg)]">{profesion.dossierLine}</p>
+              </div>
+            </div>
+          )}
         </DossierCard>
 
         {/* ══ CAPA 2: MAPA DE SISTEMAS ══ */}

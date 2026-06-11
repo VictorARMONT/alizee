@@ -2,19 +2,26 @@
  * ALIZEE — Banco de preguntas del funnel (sección PADRE)
  *
  * Q1  relación      → kind: "single"    (¿para quién?)
- * Q2  proyección    → kind: "image"     (grid 2×2, proyección visual)
- * Q3  decision      → kind: "image"     (grid 2×2, lugar en su elemento)
- * Q4  presion       → kind: "single"    (estrés — Big Five, muy diagnóstico)
- * Q5  valores       → kind: "single"    (Schwartz; tiebreaker de arquetipo)
- * Q6  mascotas      → kind: "single"    (cross-sell: escultura 3D perro / altar)
- * Q7  nacimiento    → kind: "date"      (opcional; muestra Signos + selección de paquete)
- * Q8  hora          → kind: "time"      (opcional; afina análisis avanzado)
+ * Q2  profesión     → kind: "single"    (¿a qué se dedica? — personaliza dossier)
+ * Q3  proyección    → kind: "image"     (grid 2×2, proyección visual)
+ * Q4  decision      → kind: "image"     (grid 2×2, lugar en su elemento)
+ * Q5  presion       → kind: "single"    (estrés — Big Five, muy diagnóstico)
+ * Q6  valores       → kind: "single"    (Schwartz; tiebreaker de arquetipo)
+ * Q7  mascotas      → kind: "single"    (cross-sell: escultura 3D perro / altar)
+ * Q8  nacimiento    → kind: "date"      (opcional; muestra Signos + selección de paquete)
+ * Q9  hora          → kind: "time"      (opcional; afina análisis avanzado)
+ *
+ * El indicador "Paso X de Y" se calcula en QuizFlow desde index/TOTAL_STEPS
+ * (no hardcodear en cada pregunta).
  */
+
+import { PROFESIONES } from "@/data/profesion";
 
 export type ArchetypeKey = "lider" | "explorador" | "creador" | "sabio";
 
 export type QuestionId =
   | "relationship"
+  | "profesion"
   | "proyeccion"
   | "decision"
   | "presion"
@@ -46,7 +53,7 @@ export interface Question {
   skipLabel?: string;
 }
 
-const TOTAL = 8;
+const TOTAL = 9;
 
 export const QUESTIONS: Question[] = [
   /* ── Q1: RELACIÓN ── */
@@ -55,7 +62,6 @@ export const QUESTIONS: Question[] = [
     kind: "single",
     index: 1,
     total: TOTAL,
-    kicker: "Paso 1 de 8",
     prompt: "¿Para quién es el regalo?",
     options: [
       { key: "papa",   label: "Mi papá",            glyph: "◆" },
@@ -66,13 +72,27 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q2: PROYECCIÓN VISUAL ── */
+  /* ── Q2: PROFESIÓN (concreta, baja fricción; personaliza dossier, no arquetipo) ── */
+  {
+    id: "profesion",
+    kind: "single",
+    index: 2,
+    total: TOTAL,
+    prompt: "¿A qué se dedica?",
+    subtext: "Su profesión nos ayuda a que el regalo conecte con su mundo.",
+    options: PROFESIONES.map((p) => ({
+      key: p.key,
+      label: p.label,
+      glyph: p.emoji,
+    })),
+  },
+
+  /* ── Q3: PROYECCIÓN VISUAL ── */
   {
     id: "proyeccion",
     kind: "image",
-    index: 2,
+    index: 3,
     total: TOTAL,
-    kicker: "Paso 2 de 8",
     prompt: "¿Cuál de estas imágenes lo describe mejor en su elemento?",
     options: [
       {
@@ -102,13 +122,12 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q3: LUGAR EN SU ELEMENTO (proyección visual de entorno) ── */
+  /* ── Q4: LUGAR EN SU ELEMENTO (proyección visual de entorno) ── */
   {
     id: "decision",
     kind: "image",
-    index: 3,
+    index: 4,
     total: TOTAL,
-    kicker: "Paso 3 de 8",
     prompt: "¿En cuál de estos lugares se sentiría más en su elemento?",
     options: [
       {
@@ -138,13 +157,12 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q4: RESPUESTA AL ESTRÉS (Big Five: Neuroticism / Stability, muy diagnóstico) ── */
+  /* ── Q5: RESPUESTA AL ESTRÉS (Big Five: Neuroticism / Stability, muy diagnóstico) ── */
   {
     id: "presion",
     kind: "single",
-    index: 4,
+    index: 5,
     total: TOTAL,
-    kicker: "Paso 4 de 8",
     prompt: "Cuando algo sale mal, su primera reacción es…",
     options: [
       { key: "control",     archetype: "lider",
@@ -158,13 +176,12 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q5: VALORES — TIEBREAKER (Schwartz Basic Human Values) ── */
+  /* ── Q6: VALORES — TIEBREAKER (Schwartz Basic Human Values) ── */
   {
     id: "valores",
     kind: "single",
-    index: 5,
+    index: 6,
     total: TOTAL,
-    kicker: "Paso 5 de 8",
     prompt: "¿Qué es lo que más valora en las personas que lo rodean?",
     options: [
       { key: "lealtad",     archetype: "lider",
@@ -178,13 +195,12 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q6: MASCOTAS — señal de cross-sell (sin peso en arquetipo) ── */
+  /* ── Q7: MASCOTAS — señal de cross-sell (sin peso en arquetipo) ── */
   {
     id: "mascotas",
     kind: "single",
-    index: 6,
+    index: 7,
     total: TOTAL,
-    kicker: "Paso 6 de 8",
     prompt: "¿Tiene animales en casa?",
     subtext: "Nos ayuda a personalizar algunas piezas del box.",
     options: [
@@ -195,25 +211,23 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q7: FECHA DE NACIMIENTO + PAQUETE (opcional) ── */
+  /* ── Q8: FECHA DE NACIMIENTO + PAQUETE (opcional) ── */
   {
     id: "fechaNacimiento",
     kind: "date",
-    index: 7,
+    index: 8,
     total: TOTAL,
-    kicker: "Paso 7 de 8",
     prompt: "¿Conoces su fecha de nacimiento?",
     subtext: "Desbloquea sus signos y elige el paquete de su regalo.",
     skipLabel: "No la sé / Prefiero saltar",
   },
 
-  /* ── Q8: HORA DE NACIMIENTO (opcional; afina análisis avanzado) ── */
+  /* ── Q9: HORA DE NACIMIENTO (opcional; afina análisis avanzado) ── */
   {
     id: "horaNacimiento",
     kind: "time",
-    index: 8,
+    index: 9,
     total: TOTAL,
-    kicker: "Paso 8 de 8",
     prompt: "¿A qué hora nació?",
     subtext: "La hora exacta afina su análisis astral. Si no la sabes, puedes saltar este paso.",
     skipLabel: "No sé la hora / Saltar",
