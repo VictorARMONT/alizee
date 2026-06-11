@@ -14,7 +14,7 @@ import { DrumDatePicker } from "@/components/DrumPicker";
  *   y marcado en rosa.
  * - Ceremonia se ofrece como "Análisis avanzado + regalo personalizado" + IVA.
  * - Esencial y Legado quedan como opciones compactas.
- * La hora se pide en el paso 8 (BirthTimeStep).
+ * (La hora ya no se pide; la astrocartografía usa solo la fecha.)
  */
 interface BirthDateStepProps {
   date: string | null;

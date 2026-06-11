@@ -121,13 +121,19 @@ export function AstrocartographySection({ birthDate, birthTime, sunSign, archety
 
       {/* Footer note */}
       <p className="text-[10px] text-[var(--brand-fg-muted)] leading-relaxed border-t border-[var(--brand-border)] pt-4">
-        Análisis basado en tu fecha y hora de nacimiento. Los lugares no determinan el destino — amplifican o atenúan energías que ya están en tu perfil.
+        Análisis basado en tu fecha de nacimiento. Los lugares no determinan el destino — amplifican o atenúan energías que ya están en tu perfil.
       </p>
     </motion.div>
   );
 }
 
 /* ── Sub-componentes ── */
+
+/** Dedup por ciudad: con análisis solo-fecha el ángulo es constante y el
+ *  algoritmo puede repetir una ciudad dentro de una categoría. */
+function uniquePlaces(places: AstroCategory["places"]) {
+  return places.filter((p, i, arr) => arr.findIndex((x) => x.city === p.city) === i);
+}
 
 function CategoryRow({ cat }: { cat: AstroCategory }) {
   return (
@@ -155,7 +161,7 @@ function CategoryRow({ cat }: { cat: AstroCategory }) {
 
       {/* Cities */}
       <div className="flex flex-wrap gap-2">
-        {cat.places.map((p) => (
+        {uniquePlaces(cat.places).map((p) => (
           <span
             key={p.city}
             className="inline-flex items-center gap-1 text-[12px] font-medium rounded-full px-2.5 py-1"
@@ -187,7 +193,7 @@ function AvoidRow({ cat, prepTips }: { cat: AstroCategory; prepTips?: string[] }
       </div>
       <p className="text-[12px] italic text-[var(--brand-fg-muted)]">{cat.headline}</p>
       <div className="flex flex-wrap gap-2">
-        {cat.places.map((p) => (
+        {uniquePlaces(cat.places).map((p) => (
           <span
             key={p.city}
             className="inline-flex items-center gap-1 text-[12px] font-medium rounded-full px-2.5 py-1"

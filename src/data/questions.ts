@@ -3,13 +3,15 @@
  *
  * Q1  relación      → kind: "single"    (¿para quién?)
  * Q2  profesión     → kind: "single"    (¿a qué se dedica? — personaliza dossier)
- * Q3  proyección    → kind: "image"     (grid 2×2, proyección visual)
- * Q4  decision      → kind: "image"     (grid 2×2, lugar en su elemento)
- * Q5  presion       → kind: "single"    (estrés — Big Five, muy diagnóstico)
- * Q6  valores       → kind: "single"    (Schwartz; tiebreaker de arquetipo)
- * Q7  mascotas      → kind: "single"    (cross-sell: escultura 3D perro / altar)
- * Q8  nacimiento    → kind: "date"      (opcional; muestra Signos + selección de paquete)
- * Q9  hora          → kind: "time"      (opcional; afina análisis avanzado)
+ * Q3  proyección    → kind: "image"     (grid 2×2, proyección visual — arquetipo)
+ * Q4  decision      → kind: "image"     (grid 2×2, lugar en su elemento — arquetipo)
+ * Q5  presion       → kind: "single"    (Big Five: estabilidad emocional — arquetipo)
+ * Q6  energia       → kind: "single"    (Big Five: extraversión — arquetipo)
+ * Q7  apertura      → kind: "single"    (Big Five: apertura a la experiencia — arquetipo)
+ * Q8  valores       → kind: "single"    (Schwartz; tiebreaker de arquetipo)
+ * Q9  mascotas      → kind: "single"    (cross-sell: escultura 3D perro / altar)
+ * Q10 sobreEl       → kind: "text"      (texto libre opcional — quien arma el box lo lee)
+ * Q11 nacimiento    → kind: "date"      (opcional; muestra Signos + selección de paquete)
  *
  * El indicador "Paso X de Y" se calcula en QuizFlow desde index/TOTAL_STEPS
  * (no hardcodear en cada pregunta).
@@ -25,10 +27,12 @@ export type QuestionId =
   | "proyeccion"
   | "decision"
   | "presion"
+  | "energia"
+  | "apertura"
   | "valores"
   | "mascotas"
-  | "fechaNacimiento"
-  | "horaNacimiento";
+  | "sobreEl"
+  | "fechaNacimiento";
 
 export interface Option {
   key: string;
@@ -39,7 +43,7 @@ export interface Option {
   caption?: string;
 }
 
-export type QuestionKind = "single" | "image" | "date" | "time";
+export type QuestionKind = "single" | "image" | "date" | "time" | "text";
 
 export interface Question {
   id: QuestionId;
@@ -51,9 +55,10 @@ export interface Question {
   subtext?: string;
   options?: Option[];
   skipLabel?: string;
+  placeholder?: string;
 }
 
-const TOTAL = 9;
+const TOTAL = 11;
 
 export const QUESTIONS: Question[] = [
   /* ── Q1: RELACIÓN ── */
@@ -157,7 +162,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q5: RESPUESTA AL ESTRÉS (Big Five: Neuroticism / Stability, muy diagnóstico) ── */
+  /* ── Q5: RESPUESTA AL ESTRÉS (Big Five: Estabilidad emocional / Neuroticism) ── */
   {
     id: "presion",
     kind: "single",
@@ -176,11 +181,49 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q6: VALORES — TIEBREAKER (Schwartz Basic Human Values) ── */
+  /* ── Q6: ENERGÍA SOCIAL (Big Five: Extraversión) ── */
+  {
+    id: "energia",
+    kind: "single",
+    index: 6,
+    total: TOTAL,
+    prompt: "En una reunión con gente, él suele…",
+    options: [
+      { key: "lidera",   archetype: "lider",
+        label: "Llevar la conversación. La gente lo busca" },
+      { key: "circula",  archetype: "explorador",
+        label: "Moverse entre grupos, conociendo a todos" },
+      { key: "afondo",   archetype: "creador",
+        label: "Hablar a fondo con una o dos personas" },
+      { key: "observa",  archetype: "sabio",
+        label: "Observar y escuchar más de lo que habla" },
+    ],
+  },
+
+  /* ── Q7: APERTURA A LA EXPERIENCIA (Big Five: Openness) ── */
+  {
+    id: "apertura",
+    kind: "single",
+    index: 7,
+    total: TOTAL,
+    prompt: "Frente a algo nuevo y desconocido, él…",
+    options: [
+      { key: "lanza",     archetype: "explorador",
+        label: "Se lanza primero y pregunta después" },
+      { key: "estudia",   archetype: "creador",
+        label: "Lo estudia para entender cómo funciona" },
+      { key: "evalua",    archetype: "lider",
+        label: "Evalúa si vale la pena antes de entrar" },
+      { key: "probado",   archetype: "sabio",
+        label: "Prefiere lo probado; lo nuevo debe ganárselo" },
+    ],
+  },
+
+  /* ── Q8: VALORES — TIEBREAKER (Schwartz Basic Human Values) ── */
   {
     id: "valores",
     kind: "single",
-    index: 6,
+    index: 8,
     total: TOTAL,
     prompt: "¿Qué es lo que más valora en las personas que lo rodean?",
     options: [
@@ -195,11 +238,11 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q7: MASCOTAS — señal de cross-sell (sin peso en arquetipo) ── */
+  /* ── Q9: MASCOTAS — señal de cross-sell (sin peso en arquetipo) ── */
   {
     id: "mascotas",
     kind: "single",
-    index: 7,
+    index: 9,
     total: TOTAL,
     prompt: "¿Tiene animales en casa?",
     subtext: "Nos ayuda a personalizar algunas piezas del box.",
@@ -211,26 +254,27 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q8: FECHA DE NACIMIENTO + PAQUETE (opcional) ── */
+  /* ── Q10: TEXTO LIBRE — quien arma el box lo lee (opcional) ── */
+  {
+    id: "sobreEl",
+    kind: "text",
+    index: 10,
+    total: TOTAL,
+    prompt: "¿Qué lo hace único?",
+    subtext: "Una frase tuya sobre él nos ayuda a darle el toque final. Opcional.",
+    placeholder: "Ej. Le encanta la pesca, siempre cuenta la misma historia, nunca se pierde un partido…",
+    skipLabel: "Saltar este paso",
+  },
+
+  /* ── Q11: FECHA DE NACIMIENTO + PAQUETE (opcional) ── */
   {
     id: "fechaNacimiento",
     kind: "date",
-    index: 8,
+    index: 11,
     total: TOTAL,
     prompt: "¿Conoces su fecha de nacimiento?",
     subtext: "Desbloquea sus signos y elige el paquete de su regalo.",
     skipLabel: "No la sé / Prefiero saltar",
-  },
-
-  /* ── Q9: HORA DE NACIMIENTO (opcional; afina análisis avanzado) ── */
-  {
-    id: "horaNacimiento",
-    kind: "time",
-    index: 9,
-    total: TOTAL,
-    prompt: "¿A qué hora nació?",
-    subtext: "La hora exacta afina su análisis astral. Si no la sabes, puedes saltar este paso.",
-    skipLabel: "No sé la hora / Saltar",
   },
 
 ];

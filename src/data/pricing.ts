@@ -21,7 +21,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "esencial",
     name: "Esencial",
-    priceMXN: 690, // precio marketing, IVA incluido (~595 neto)
+    priceMXN: 790, // precio marketing, IVA incluido (~681 neto)
     tagline: "Lo esencial, dicho con intención.",
     includes: [
       "Dossier de análisis — su lectura completa, lista para guardar.",
@@ -31,7 +31,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "ritual",
     name: "Ritual",
-    priceMXN: 1050, // precio marketing, IVA incluido (~905 neto)
+    priceMXN: 1290, // precio marketing, IVA incluido (~1112 neto)
     tagline: "Cuando el objeto también carga significado.",
     includes: [
       "Dossier de análisis en papel y digital.",
@@ -42,7 +42,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "ceremonia",
     name: "Ceremonia",
-    priceMXN: 2250, // precio marketing, IVA incluido (~1940 neto)
+    priceMXN: 2690, // precio marketing, IVA incluido (~2319 neto)
     tagline: "El regalo que se vuelve un momento.",
     includes: [
       "Dossier de análisis en papel y digital.",
@@ -54,7 +54,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "legado",
     name: "Legado",
-    priceMXN: 4590, // precio marketing, IVA incluido (~3957 neto)
+    priceMXN: 4990, // precio marketing, IVA incluido (~4302 neto)
     tagline: "Lo que no se desempaca: se hereda.",
     includes: [
       "Dossier de análisis en papel y digital.",

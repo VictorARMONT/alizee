@@ -8,7 +8,6 @@ import { Logo } from "@/components/Logo";
 import { OptionCard } from "@/components/OptionCard";
 import { ImageOptionCard } from "@/components/ImageOptionCard";
 import { BirthDateStep } from "@/components/BirthDateStep";
-import { BirthTimeStep } from "@/components/BirthTimeStep";
 import { TOTAL_STEPS } from "@/data/questions";
 import { useFunnel, useCurrentQuestion } from "@/store/funnel";
 import { analytics } from "@/lib/analytics";
@@ -22,7 +21,6 @@ export function QuizFlow() {
   const setAnswer    = useFunnel((s) => s.setAnswer);
   const setBirthDate = useFunnel((s) => s.setBirthDate);
   const setBirthTime = useFunnel((s) => s.setBirthTime);
-  const birthTime    = useFunnel((s) => s.birthTime);
   const selectedTierIdx = useFunnel((s) => s.selectedTierIdx);
   const setTierIdx   = useFunnel((s) => s.setTierIdx);
   const next         = useFunnel((s) => s.next);
@@ -47,11 +45,6 @@ export function QuizFlow() {
 
   // Auto-acepta aviso si llega directo (bookmark / link externo)
   useEffect(() => { setPrivacyAccepted(true); }, [setPrivacyAccepted]);
-
-  // Paso 8 (hora) solo tiene sentido con fecha — si saltaron la fecha, sáltalo también
-  useEffect(() => {
-    if (question?.kind === "time" && !birthDate) next();
-  }, [question, birthDate, next]);
 
   if (!question) return null;
 
@@ -166,16 +159,33 @@ export function QuizFlow() {
             />
           )}
 
-          {/* Paso 8: Hora de nacimiento */}
-          {question.kind === "time" && (
-            <BirthTimeStep
-              time={birthTime}
-              onTimeChange={(t) => setBirthTime(t)}
-              selectedTierIdx={selectedTierIdx}
-              onSubmit={() => next()}
-              onSkip={() => { setBirthTime(null); next(); }}
-              skipLabel={question.skipLabel ?? "No sé la hora / Saltar"}
-            />
+          {/* Texto libre — "¿Qué lo hace único?" (opcional) */}
+          {question.kind === "text" && (
+            <div className="flex flex-col gap-4">
+              <textarea
+                value={answers[question.id] ?? ""}
+                onChange={(e) => setAnswer(question.id, e.target.value)}
+                placeholder={question.placeholder}
+                rows={4}
+                maxLength={400}
+                className="w-full rounded-[var(--radius-md)] border border-[var(--brand-border)] bg-[var(--brand-surface)] px-4 py-3 text-[15px] leading-relaxed text-[var(--brand-fg)] placeholder:text-[var(--brand-fg-muted)] resize-none focus:outline-none focus:border-[var(--brand-primary)]"
+              />
+              <button
+                type="button"
+                onClick={() => next()}
+                style={{ background: "linear-gradient(90deg, #F97316 0%, #E91E8C 100%)" }}
+                className="w-full min-h-[56px] rounded-full text-base font-semibold text-white hover:opacity-90 active:opacity-80 transition-opacity select-none"
+              >
+                Continuar →
+              </button>
+              <button
+                type="button"
+                onClick={() => { setAnswer(question.id, ""); next(); }}
+                className="text-sm text-[var(--brand-fg-muted)] underline underline-offset-4 decoration-[var(--brand-border)] hover:text-[var(--brand-fg)] transition-colors self-center"
+              >
+                {question.skipLabel ?? "Saltar este paso"}
+              </button>
+            </div>
           )}
 
           {/* Sin CTA en single/image — auto-avance via blink */}

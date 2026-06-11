@@ -491,11 +491,11 @@ export function DossierReveal({
           </DossierCard>
         )}
 
-        {/* ══ CAPA 6: ASTROCARTOGRAFÍA + VIAJE (solo si hay fecha + hora, PRO) ══ */}
-        {birthDate && birthTime && (
+        {/* ══ CAPA 6: ASTROCARTOGRAFÍA + VIAJE (solo si hay fecha, PRO) ══ */}
+        {birthDate && (
           <AstrocartographySection
             birthDate={birthDate}
-            birthTime={birthTime}
+            birthTime={birthTime ?? ""}
             sunSign={sign}
             archetypeKey={archetypeKey}
           />

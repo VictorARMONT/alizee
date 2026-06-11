@@ -130,17 +130,17 @@ export default async function HomePage() {
             <StepCard
               n="1"
               title="Responde el test"
-              detail="6 preguntas sobre su personalidad. Te toma menos de 2 minutos."
+              detail="11 pasos para diseñar su regalo, con preguntas de personalidad. Menos de 3 minutos."
             />
             <StepCard
               n="2"
               title="Revelamos su arquetipo"
-              detail="Cruzamos su signo, año chino, Saju coreano y más para descubrir quién es realmente."
+              detail="Usamos 7 sistemas de conocimiento para descubrir quién es realmente."
             />
             <StepCard
               n="3"
               title="Recibe su paquete secreto"
-              detail="Una pieza de arte hecha a su medida y un dossier con su análisis, listos para regalar."
+              detail="Incluye un dossier con su análisis dentro de un paquete secreto listos para regalar."
             />
           </div>
         </section>
