@@ -56,7 +56,7 @@ export default async function HomePage() {
               className="self-start text-[11px] font-semibold uppercase tracking-[0.22em] px-3 py-1 rounded-full"
               style={{ background: "rgba(180,20,90,0.35)", color: "#fff" }}
             >
-              Edición Día del Padre · 21 de junio
+              Edición Día del Padre
             </span>
             <h1 className="text-[38px] leading-[1.06] font-bold tracking-tight text-white"
               style={{ fontFamily: "var(--font-display, inherit)" }}
@@ -65,7 +65,7 @@ export default async function HomePage() {
               <em className="az-em not-italic" style={{ color: "#F9A8D4" }}>lo va a sorprender.</em>
             </h1>
             <p className="text-[16px] leading-relaxed text-white/80 max-w-md">
-              Responde un test de 2 minutos sobre tu papá y diseñamos un <strong className="text-white font-semibold">paquete secreto hecho a su medida</strong> — se convierte en un regalo unico e irrepetible y el resultado de estudio revela revela quién es de verdad.
+              Descubre el secreto de su personalidad. Responde el test y recibe un <strong className="text-white font-semibold">regalo irrepetible hecho a su medida</strong>.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mt-1">
               <QuizCTA
@@ -87,7 +87,7 @@ export default async function HomePage() {
                 <span style={{ color: "#F9A8D4" }}>✓</span> Envío a todo México
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span style={{ color: "#F9A8D4" }}>✓</span> Hecho a mano
+                <span style={{ color: "#F9A8D4" }}>✓</span> Diseño ultra-personalizado
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span style={{ color: "#F9A8D4" }}>✓</span> Listo para regalar
