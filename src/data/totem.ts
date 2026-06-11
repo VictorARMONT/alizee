@@ -18,7 +18,10 @@
  * Fuentes:
  *   - Sellos mayas: iconografía Tzolkin Clásico (Lounsbury/Thompson)
  *   - Animales de poder: tradición chamánica mesoamericana + arquetipo ALIZEE
- *   - Piedras: American Gem Society (birthstones) + tradición zodiacal occidental
+ *   - Piedras (3 capas, de mayor a menor oficialidad):
+ *       1. Mes  → birthstones oficiales, lista Jewelers of America 1912, mantenida por GIA/AGS (estándar de industria)
+ *       2. Signo → tradición lapidaria zodiacal occidental, listas históricas pre-1912 (sin estándar único)
+ *       3. Arquetipo → curaduría propia ALIZEE sobre correspondencias minerales tradicionales
  *   - Animales zodiacales: sincretismo occidental-nahua
  */
 
@@ -46,9 +49,9 @@ export interface TotemLayer {
 }
 
 export interface StoneRecommendation {
-  primary: { name: string; reason: string };
-  secondary: { name: string; reason: string };
-  intention: { name: string; reason: string };
+  primary: { name: string; reason: string; source: string };
+  secondary: { name: string; reason: string; source: string };
+  intention: { name: string; reason: string; source: string };
 }
 
 export interface TotemProfile {
@@ -320,40 +323,40 @@ interface StoneData {
 }
 
 const BIRTHSTONES_BY_MONTH: Record<number, StoneData> = {
-  1:  { name:"Granate",      color:"Rojo profundo",   family:"Granate",      properties:"Vitalidad, protección, conexión con raíces.", sourceSystem:"GIA birthstone enero" },
-  2:  { name:"Amatista",     color:"Violeta",          family:"Cuarzo",       properties:"Calma mental, claridad espiritual, intuición.", sourceSystem:"GIA birthstone febrero" },
-  3:  { name:"Aguamarina",   color:"Azul celeste",     family:"Berilo",       properties:"Comunicación clara, fluidez, coraje tranquilo.", sourceSystem:"GIA birthstone marzo" },
-  4:  { name:"Diamante",     color:"Transparente",     family:"Carbono",      properties:"Claridad, fuerza, amplificación de intención.", sourceSystem:"GIA birthstone abril" },
-  5:  { name:"Esmeralda",    color:"Verde intenso",    family:"Berilo",       properties:"Crecimiento, amor, abundancia, renovación.", sourceSystem:"GIA birthstone mayo" },
-  6:  { name:"Perla",        color:"Blanco nacarado",  family:"Orgánica",     properties:"Pureza, sabiduría acumulada, ciclos lunares.", sourceSystem:"GIA birthstone junio" },
-  7:  { name:"Rubí",         color:"Rojo fuego",       family:"Corindón",     properties:"Pasión, protección, fuerza solar, coraje.", sourceSystem:"GIA birthstone julio" },
-  8:  { name:"Peridoto",     color:"Verde oliva",      family:"Olivino",      properties:"Limpieza energética, prosperidad, alegría.", sourceSystem:"GIA birthstone agosto" },
-  9:  { name:"Zafiro",       color:"Azul real",        family:"Corindón",     properties:"Sabiduría, devoción, honestidad, claridad mental.", sourceSystem:"GIA birthstone septiembre" },
-  10: { name:"Ópalo",        color:"Multicolor",       family:"Ópalo",        properties:"Creatividad, espontaneidad, magia cotidiana.", sourceSystem:"GIA birthstone octubre" },
-  11: { name:"Topacio",      color:"Amarillo / azul",  family:"Silicato",     properties:"Abundancia, alegría, manifestación.", sourceSystem:"GIA birthstone noviembre" },
-  12: { name:"Turquesa",     color:"Azul turquesa",    family:"Fosfato",      properties:"Protección en viaje, comunicación, equilibrio.", sourceSystem:"GIA birthstone diciembre" },
+  1:  { name:"Granate",      color:"Rojo profundo",   family:"Granate",      properties:"Vitalidad, protección, conexión con raíces.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · enero" },
+  2:  { name:"Amatista",     color:"Violeta",          family:"Cuarzo",       properties:"Calma mental, claridad espiritual, intuición.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · febrero" },
+  3:  { name:"Aguamarina",   color:"Azul celeste",     family:"Berilo",       properties:"Comunicación clara, fluidez, coraje tranquilo.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · marzo" },
+  4:  { name:"Diamante",     color:"Transparente",     family:"Carbono",      properties:"Claridad, fuerza, amplificación de intención.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · abril" },
+  5:  { name:"Esmeralda",    color:"Verde intenso",    family:"Berilo",       properties:"Crecimiento, amor, abundancia, renovación.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · mayo" },
+  6:  { name:"Perla",        color:"Blanco nacarado",  family:"Orgánica",     properties:"Pureza, sabiduría acumulada, ciclos lunares.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · junio" },
+  7:  { name:"Rubí",         color:"Rojo fuego",       family:"Corindón",     properties:"Pasión, protección, fuerza solar, coraje.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · julio" },
+  8:  { name:"Peridoto",     color:"Verde oliva",      family:"Olivino",      properties:"Limpieza energética, prosperidad, alegría.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · agosto" },
+  9:  { name:"Zafiro",       color:"Azul real",        family:"Corindón",     properties:"Sabiduría, devoción, honestidad, claridad mental.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · septiembre" },
+  10: { name:"Ópalo",        color:"Multicolor",       family:"Ópalo",        properties:"Creatividad, espontaneidad, magia cotidiana.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · octubre" },
+  11: { name:"Topacio",      color:"Amarillo / azul",  family:"Silicato",     properties:"Abundancia, alegría, manifestación.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · noviembre" },
+  12: { name:"Turquesa",     color:"Azul turquesa",    family:"Fosfato",      properties:"Protección en viaje, comunicación, equilibrio.", sourceSystem:"Birthstone oficial — Jewelers of America (1912) · GIA · diciembre" },
 };
 
 const ZODIAC_STONES: Record<SunSign, StoneData> = {
-  aries:       { name:"Rubí",        color:"Rojo",         family:"Corindón",  properties:"Coraje, iniciativa, fuego interno.",        sourceSystem:"Tradición zodiacal occidental" },
-  tauro:       { name:"Esmeralda",   color:"Verde",        family:"Berilo",    properties:"Abundancia material, arraigo, sensorialidad.", sourceSystem:"Tradición zodiacal occidental" },
-  geminis:     { name:"Ágata",       color:"Multicolor",   family:"Cuarzo",    properties:"Claridad mental, dualidad integrada.",      sourceSystem:"Tradición zodiacal occidental" },
-  cancer:      { name:"Piedra Luna", color:"Blanco azul",  family:"Feldespato",properties:"Intuición, ciclos emocionales, hogar.",     sourceSystem:"Tradición zodiacal occidental" },
-  leo:         { name:"Ojo de Tigre",color:"Dorado café",  family:"Cuarzo",    properties:"Confianza, visión, poder solar.",           sourceSystem:"Tradición zodiacal occidental" },
-  virgo:       { name:"Jade",        color:"Verde claro",  family:"Piroxeno",  properties:"Sabiduría práctica, armonía, salud.",       sourceSystem:"Tradición zodiacal occidental" },
-  libra:       { name:"Ópalo",       color:"Multicolor",   family:"Ópalo",     properties:"Equilibrio, belleza, justicia.",            sourceSystem:"Tradición zodiacal occidental" },
-  escorpio:    { name:"Obsidiana",   color:"Negro",        family:"Vidrio volcánico", properties:"Protección, verdad, transformación.",  sourceSystem:"Tradición zodiacal + México" },
-  sagitario:   { name:"Turquesa",    color:"Azul turquesa",family:"Fosfato",   properties:"Expansión, protección en viaje, verdad.",   sourceSystem:"Tradición zodiacal occidental" },
-  capricornio: { name:"Granate",     color:"Rojo oscuro",  family:"Granate",   properties:"Estructura, disciplina, logro.",           sourceSystem:"Tradición zodiacal occidental" },
-  acuario:     { name:"Amatista",    color:"Violeta",      family:"Cuarzo",    properties:"Visión colectiva, innovación, despertar.",  sourceSystem:"Tradición zodiacal occidental" },
-  piscis:      { name:"Aguamarina",  color:"Azul suave",   family:"Berilo",    properties:"Compasión, disolución de límites, fe.",    sourceSystem:"Tradición zodiacal occidental" },
+  aries:       { name:"Rubí",        color:"Rojo",         family:"Corindón",  properties:"Coraje, iniciativa, fuego interno.",        sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  tauro:       { name:"Esmeralda",   color:"Verde",        family:"Berilo",    properties:"Abundancia material, arraigo, sensorialidad.", sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  geminis:     { name:"Ágata",       color:"Multicolor",   family:"Cuarzo",    properties:"Claridad mental, dualidad integrada.",      sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  cancer:      { name:"Piedra Luna", color:"Blanco azul",  family:"Feldespato",properties:"Intuición, ciclos emocionales, hogar.",     sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  leo:         { name:"Ojo de Tigre",color:"Dorado café",  family:"Cuarzo",    properties:"Confianza, visión, poder solar.",           sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  virgo:       { name:"Jade",        color:"Verde claro",  family:"Piroxeno",  properties:"Sabiduría práctica, armonía, salud.",       sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  libra:       { name:"Ópalo",       color:"Multicolor",   family:"Ópalo",     properties:"Equilibrio, belleza, justicia.",            sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  escorpio:    { name:"Obsidiana",   color:"Negro",        family:"Vidrio volcánico", properties:"Protección, verdad, transformación.",  sourceSystem:"Tradición zodiacal occidental + lapidaria mexica (obsidiana)" },
+  sagitario:   { name:"Turquesa",    color:"Azul turquesa",family:"Fosfato",   properties:"Expansión, protección en viaje, verdad.",   sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  capricornio: { name:"Granate",     color:"Rojo oscuro",  family:"Granate",   properties:"Estructura, disciplina, logro.",           sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  acuario:     { name:"Amatista",    color:"Violeta",      family:"Cuarzo",    properties:"Visión colectiva, innovación, despertar.",  sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
+  piscis:      { name:"Aguamarina",  color:"Azul suave",   family:"Berilo",    properties:"Compasión, disolución de límites, fe.",    sourceSystem:"Tradición lapidaria zodiacal occidental (listas históricas pre-1912)" },
 };
 
 const ARCHETYPE_STONES: Record<ArchetypeKey, StoneData> = {
-  lider:      { name:"Pirita",          color:"Dorado metálico",family:"Sulfuro",  properties:"Voluntad, autoridad, protección física.",     sourceSystem:"ALIZEE — intención de arquetipo" },
-  explorador: { name:"Ágata de Fuego",  color:"Naranja ámbar",  family:"Cuarzo",   properties:"Aventura, instinto, protección en movimiento.",sourceSystem:"ALIZEE — intención de arquetipo" },
-  creador:    { name:"Cuarzo Ahumado",  color:"Café translúcido",family:"Cuarzo",  properties:"Enfoque, presencia en el trabajo, grounding.", sourceSystem:"ALIZEE — intención de arquetipo" },
-  sabio:      { name:"Amatista Oscura", color:"Violeta profundo",family:"Cuarzo",  properties:"Profundidad mental, calma, conexión interna.", sourceSystem:"ALIZEE — intención de arquetipo" },
+  lider:      { name:"Pirita",          color:"Dorado metálico",family:"Sulfuro",  properties:"Voluntad, autoridad, protección física.",     sourceSystem:"Curaduría ALIZEE — correspondencia mineral tradicional" },
+  explorador: { name:"Ágata de Fuego",  color:"Naranja ámbar",  family:"Cuarzo",   properties:"Aventura, instinto, protección en movimiento.",sourceSystem:"Curaduría ALIZEE — correspondencia mineral tradicional" },
+  creador:    { name:"Cuarzo Ahumado",  color:"Café translúcido",family:"Cuarzo",  properties:"Enfoque, presencia en el trabajo, grounding.", sourceSystem:"Curaduría ALIZEE — correspondencia mineral tradicional" },
+  sabio:      { name:"Amatista Oscura", color:"Violeta profundo",family:"Cuarzo",  properties:"Profundidad mental, calma, conexión interna.", sourceSystem:"Curaduría ALIZEE — correspondencia mineral tradicional" },
 };
 
 /* ================================================================
@@ -457,9 +460,9 @@ export function getTotemProfile(
   const archetypeStone = ARCHETYPE_STONES[archetype];
 
   const stone: StoneRecommendation = {
-    primary:   { name: birthstone.name,     reason: `Nacido en mes ${month}. ${birthstone.properties}` },
-    secondary: { name: zodiacStone.name,    reason: `Signo ${sign ?? "Leo"}. ${zodiacStone.properties}` },
-    intention: { name: archetypeStone.name, reason: `Arquetipo ${archetype}. ${archetypeStone.properties}` },
+    primary:   { name: birthstone.name,     reason: `Nacido en mes ${month}. ${birthstone.properties}`,     source: birthstone.sourceSystem },
+    secondary: { name: zodiacStone.name,    reason: `Signo ${sign ?? "Leo"}. ${zodiacStone.properties}`,    source: zodiacStone.sourceSystem },
+    intention: { name: archetypeStone.name, reason: `Arquetipo ${archetype}. ${archetypeStone.properties}`, source: archetypeStone.sourceSystem },
   };
 
   // Si las tres piedras coinciden o son de la misma familia → "convergencia"
@@ -474,9 +477,9 @@ export function getTotemProfile(
     `FRENTE (${frente.animal}): ${frente.description}`,
     `CORONA (${corona.label}): ${chinese.name} del zodíaco chino.`,
     ``,
-    `PIEDRA PRIMARIA: ${stone.primary.name} — ${stone.primary.reason}`,
-    `PIEDRA ZODIACAL: ${stone.secondary.name} — ${stone.secondary.reason}`,
-    `PIEDRA DE INTENCIÓN: ${stone.intention.name} — ${stone.intention.reason}`,
+    `PIEDRA PRIMARIA: ${stone.primary.name} — ${stone.primary.reason} [${stone.primary.source}]`,
+    `PIEDRA ZODIACAL: ${stone.secondary.name} — ${stone.secondary.reason} [${stone.secondary.source}]`,
+    `PIEDRA DE INTENCIÓN: ${stone.intention.name} — ${stone.intention.reason} [${stone.intention.source}]`,
     ``,
     `LUGAR DE PODER: ${sacredData.type}`,
     `Ejemplos: ${sacredData.examples.join(", ")}`,

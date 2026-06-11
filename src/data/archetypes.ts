@@ -9,7 +9,7 @@
  * Capas del box (ver funnel-v2-addendum.md sección 0):
  *   1. Contenido box  → ancla + complemento + piedra + vela + dossier (INCLUIDO en precio base $3,000).
  *   2. Detalle sorpresa → joyería chica / objeto pequeño, INCLUIDO, no seleccionable, por arquetipo.
- *   3. Cross-sell → upgrades de pago opcionales (grabado, empaque premium, vela extra). Ver pricing.ts.
+ *   3. Pulsera post-venta → se compra y envía aparte según el análisis (piedra por arquetipo/nahual). Sin upgrades en el funnel.
  *
  * Todos los SKU están `[SKU]` hasta que Victor llene catálogo.
  * Vela: solo 2 variantes en lanzamiento (copal + palo santo). Mapeo abajo cambiable en 4 líneas.
@@ -142,7 +142,7 @@ export const ARCHETYPES: Record<ArchetypeKey, Archetype> = {
 
   creador: {
     key: "creador",
-    name: "El Creador",
+    name: "El Inventor",
     tagline: "El que hace",
     essence: "Oficio, manos, detalle.",
     dossierLead:

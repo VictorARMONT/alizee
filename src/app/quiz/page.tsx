@@ -1,7 +1,7 @@
 import { QuizFlow } from "@/funnel/QuizFlow";
 
 export const metadata = {
-  title: "alizee — Personaliza el regalo",
+  title: "Personaliza el regalo",
   robots: { index: false, follow: false },
 };
 

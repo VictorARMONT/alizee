@@ -15,6 +15,7 @@ interface RevealProps {
   archetypeName: string;
   archetypeTagline: string;
   essence: string;
+  quote?: { text: string; author: string };
   onComplete?: () => void;
 }
 
@@ -22,6 +23,7 @@ export function Reveal({
   archetypeName,
   archetypeTagline,
   essence,
+  quote,
   onComplete,
 }: RevealProps) {
   const [phase, setPhase] = useState<0 | 1 | 2 | 3>(0);
@@ -146,16 +148,35 @@ export function Reveal({
         {archetypeName}
       </motion.h1>
 
-      {/* Tagline */}
-      <motion.p
-        className="text-base italic -mt-2"
-        style={{ color: "var(--brand-fg-muted)" }}
-        initial={{ opacity: 0 }}
-        animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {archetypeTagline}
-      </motion.p>
+      {/* Frase o tagline */}
+      {quote ? (
+        <motion.div
+          className="-mt-2 flex flex-col items-center gap-1 px-4"
+          initial={{ opacity: 0 }}
+          animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <p
+            className="text-[15px] italic leading-relaxed text-center max-w-xs"
+            style={{ color: "var(--brand-fg)", fontFamily: "var(--font-display, inherit)" }}
+          >
+            &ldquo;{quote.text}&rdquo;
+          </p>
+          <p className="text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--brand-fg-muted)" }}>
+            — {quote.author}
+          </p>
+        </motion.div>
+      ) : (
+        <motion.p
+          className="text-base italic -mt-2"
+          style={{ color: "var(--brand-fg-muted)" }}
+          initial={{ opacity: 0 }}
+          animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {archetypeTagline}
+        </motion.p>
+      )}
 
       {/* Essence */}
       <motion.p

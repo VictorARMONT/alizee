@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { BOX_TIERS, formatMXN } from "@/data/pricing";
+import { BOX_TIERS, formatMXN, ivaIncluded } from "@/data/pricing";
 import { Countdown } from "@/components/Countdown";
 import type { ArchetypeKey } from "@/data/questions";
 import { ARCHETYPES } from "@/data/archetypes";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 export interface DeliveryAddress {
   street: string;
@@ -12,16 +13,27 @@ export interface DeliveryAddress {
   cityState: string;
   zip: string;
   references: string;
+  formattedAddress?: string;
+  lat?: number;
+  lng?: number;
+  deliveryTime?: string;
 }
 
+const SLOT_LABELS: Record<string, string> = {
+  manana: "Mañana (9 am – 1 pm)",
+  tarde:  "Tarde (1 pm – 6 pm)",
+  noche:  "Noche (6 pm – 9 pm)",
+  flexible: "Flexible (cualquier hora)",
+};
+
 function isAddressComplete(a: DeliveryAddress) {
-  return a.street.trim() !== "" && a.colonia.trim() !== "" && a.cityState.trim() !== "" && a.zip.trim() !== "";
+  const hasAddress = (a.formattedAddress?.trim() || a.street.trim()) !== "";
+  return hasAddress && !!a.deliveryTime;
 }
 
 interface CheckoutSummaryProps {
   archetypeKey: ArchetypeKey;
   selectedTierIdx: number;
-  upgradesSelected: Record<string, boolean>;
   total: number;
   initialEmail: string | null;
   onEmailSave: (email: string) => void;
@@ -31,7 +43,6 @@ interface CheckoutSummaryProps {
 export function CheckoutSummary({
   archetypeKey,
   selectedTierIdx,
-  upgradesSelected,
   total,
   initialEmail,
   onEmailSave,
@@ -67,9 +78,14 @@ export function CheckoutSummary({
         {/* Total */}
         <div className="flex items-center justify-between px-5 py-4 border-t-2 border-[var(--brand-border)]">
           <p className="text-[17px] font-semibold text-[var(--brand-fg)]">Total</p>
-          <p className="text-[22px] font-semibold tabular-nums text-[var(--brand-primary)]">
-            {formatMXN(total)}
-          </p>
+          <div className="text-right">
+            <p className="text-[22px] font-semibold tabular-nums text-[var(--brand-primary)]">
+              {formatMXN(total)}
+            </p>
+            <p className="text-[11px] text-[var(--brand-fg-muted)]">
+              IVA incluido ({formatMXN(ivaIncluded(total))})
+            </p>
+          </div>
         </div>
       </div>
 
@@ -84,7 +100,7 @@ export function CheckoutSummary({
       </div>
 
       {/* Dirección de entrega */}
-      <AddressForm address={address} onChange={setAddress} />
+      <AddressAutocomplete address={address} onChange={setAddress} />
 
       {/* CTA principal */}
       <button
@@ -122,6 +138,8 @@ export function CheckoutSummary({
   );
 }
 
+export { SLOT_LABELS };
+
 /* ------------------------------------------------------------------ */
 
 function LineItem({
@@ -148,105 +166,6 @@ function LineItem({
       >
         {included ? "incluido" : `+${formatMXN(amount)}`}
       </span>
-    </div>
-  );
-}
-
-function AddressForm({
-  address,
-  onChange,
-}: {
-  address: DeliveryAddress;
-  onChange: (a: DeliveryAddress) => void;
-}) {
-  function field(key: keyof DeliveryAddress) {
-    return (value: string) => onChange({ ...address, [key]: value });
-  }
-
-  return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--brand-border)] bg-[var(--brand-surface)] p-5 flex flex-col gap-4">
-      <div>
-        <p className="text-[16px] font-semibold text-[var(--brand-fg)]">Dirección de entrega</p>
-        <p className="text-xs text-[var(--brand-fg-muted)] mt-0.5">
-          La enviamos junto con tu pedido por WhatsApp.
-        </p>
-      </div>
-      <div className="flex flex-col gap-3">
-        <AddressInput
-          label="Calle y número *"
-          placeholder="Ej. Reforma 222, Depto. 3"
-          value={address.street}
-          onChange={field("street")}
-        />
-        <AddressInput
-          label="Colonia / Alcaldía *"
-          placeholder="Ej. Roma Norte"
-          value={address.colonia}
-          onChange={field("colonia")}
-        />
-        <div className="grid grid-cols-2 gap-3">
-          <AddressInput
-            label="Ciudad y Estado *"
-            placeholder="Ej. CDMX"
-            value={address.cityState}
-            onChange={field("cityState")}
-          />
-          <AddressInput
-            label="Código postal *"
-            placeholder="5 dígitos"
-            value={address.zip}
-            onChange={field("zip")}
-            inputMode="numeric"
-            maxLength={10}
-          />
-        </div>
-        <AddressInput
-          label="Referencias"
-          placeholder="Ej. portón azul, entre calles..."
-          value={address.references}
-          onChange={field("references")}
-        />
-      </div>
-    </div>
-  );
-}
-
-function AddressInput({
-  label,
-  placeholder,
-  value,
-  onChange,
-  inputMode,
-  maxLength,
-}: {
-  label: string;
-  placeholder: string;
-  value: string;
-  onChange: (v: string) => void;
-  inputMode?: React.InputHTMLAttributes<HTMLInputElement>["inputMode"];
-  maxLength?: number;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <label className="text-[11px] uppercase tracking-[0.16em] text-[var(--brand-fg-muted)]">
-        {label}
-      </label>
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={value}
-        inputMode={inputMode}
-        maxLength={maxLength ?? 200}
-        onChange={(e) => onChange(e.target.value)}
-        className="
-          min-h-[44px] rounded-[var(--radius-md)]
-          border border-[var(--brand-border)] bg-[var(--brand-bg)]
-          px-3 text-[15px] text-[var(--brand-fg)]
-          placeholder:text-[var(--brand-fg-muted)]
-          outline-none focus:border-[var(--brand-primary)]
-          transition-colors
-        "
-      />
     </div>
   );
 }

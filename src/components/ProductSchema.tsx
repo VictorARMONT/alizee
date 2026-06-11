@@ -11,23 +11,20 @@ export function ProductSchemaScript() {
     "@type": "Product",
     name: `${tier.name} — El Regalo Perfecto`,
     description: tier.tagline || `Paquete ${tier.name} con análisis personalizado y tótem en 3D.`,
-    image: "https://alizee.mx/logo-primary-crop.png",
+    image: "https://alizee.mx/misterybox.png",
     brand: {
       "@type": "Brand",
       name: "ALIZEE",
     },
     offers: {
       "@type": "Offer",
-      price: String(tier.priceMXN),
+      price: String(tier.priceMXN), // precio final, IVA incluido
       priceCurrency: "MXN",
       availability: "https://schema.org/InStock",
       url: `https://alizee.mx/#${tier.id}`,
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      ratingCount: "1",
-    },
+    // aggregateRating omitido a propósito: marcar reviews sin reseñas reales
+    // arriesga acción manual de Google. Reintroducir cuando existan reseñas.
   }));
 
   const faqSchema = {
@@ -47,7 +44,7 @@ export function ProductSchemaScript() {
         name: "¿Cuándo llega antes del Día del Padre?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Pedidos hasta el 15 de junio para entregar antes del 21 de junio en México.",
+          text: "Pedidos hasta el 17 de junio para entregar antes del 21 de junio en México.",
         },
       },
       {

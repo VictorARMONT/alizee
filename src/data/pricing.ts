@@ -2,11 +2,10 @@
  * ALIZEE — Pricing del box y cross-sell (sección PADRE).
  *
  * Modelo:
- *   - 4 tiers de box. El tier seleccionado define el precio base.
+ *   - 4 tiers de box. El tier seleccionado define el precio total.
  *   - La selección de ancla/complemento NO mueve el precio (es elegir variante).
- *   - Upgrades = aparte, opt-in, suman al total.
  *
- * Todos los precios en MXN.
+ * Todos los precios en MXN, IVA incluido.
  */
 
 export interface BoxTier {
@@ -22,7 +21,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "esencial",
     name: "Esencial",
-    priceMXN: 580,
+    priceMXN: 690, // precio marketing, IVA incluido (~595 neto)
     tagline: "Lo esencial, dicho con intención.",
     includes: [
       "Dossier de análisis — su lectura completa, lista para guardar.",
@@ -32,7 +31,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "ritual",
     name: "Ritual",
-    priceMXN: 890,
+    priceMXN: 1050, // precio marketing, IVA incluido (~905 neto)
     tagline: "Cuando el objeto también carga significado.",
     includes: [
       "Dossier de análisis en papel y digital.",
@@ -43,7 +42,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "ceremonia",
     name: "Ceremonia",
-    priceMXN: 1920,
+    priceMXN: 2250, // precio marketing, IVA incluido (~1940 neto)
     tagline: "El regalo que se vuelve un momento.",
     includes: [
       "Dossier de análisis en papel y digital.",
@@ -55,7 +54,7 @@ export const BOX_TIERS: BoxTier[] = [
   {
     id: "legado",
     name: "Legado",
-    priceMXN: 3950,
+    priceMXN: 4590, // precio marketing, IVA incluido (~3957 neto)
     tagline: "Lo que no se desempaca: se hereda.",
     includes: [
       "Dossier de análisis en papel y digital.",
@@ -66,55 +65,19 @@ export const BOX_TIERS: BoxTier[] = [
   },
 ];
 
-export const DEFAULT_TIER_IDX = 2; // Primario — tier héroe
+export const DEFAULT_TIER_IDX = 1; // Ritual — paquete por defecto (paso 7 del quiz)
 
 export const BASE_BOX_PRICE_MXN = BOX_TIERS[DEFAULT_TIER_IDX].priceMXN;
 
-export interface Upgrade {
-  id: string;
-  label: string;
-  detail?: string;
-  priceMXN: number;
-  /** si está definido, solo mostrar cuando answers.mascotas sea uno de estos valores */
-  showWhenMascota?: string[];
-  /** estado por defecto al cargar el cross-sell */
-  defaultSelected?: boolean;
-}
-
 /**
- * Cross-sell. Precios:
- *  - grabado +250 [CONFIRMAR]
- *  - empaque premium +150 [CONFIRMAR]
- *  - vela extra +200 [CONFIRMAR]
- *  - escultura perro +350 [CONFIRMAR] — solo se muestra si answers.mascotas = perro | varios
+ * IVA México. Los precios de tiers son FINALES (IVA incluido).
+ * ivaIncluded() desglosa el IVA contenido en un precio final (para resumen/factura).
  */
-export const UPGRADES: Upgrade[] = [
-  {
-    id: "grabado",
-    label: "Grabado láser personalizado",
-    detail: "Iniciales o frase corta sobre el ancla. Hasta 24 caracteres.",
-    priceMXN: 250,
-  },
-  {
-    id: "empaque",
-    label: "Empaque premium en caja de madera",
-    detail: "Caja de pino lacada con tapa imantada. Reusable.",
-    priceMXN: 150,
-  },
-  {
-    id: "velaExtra",
-    label: "Vela de copal extra",
-    detail: "Una segunda vela para el ritual mensual.",
-    priceMXN: 200, // [CONFIRMAR]
-  },
-  {
-    id: "esculturaPerro",
-    label: "Escultura 3D de su perro",
-    detail: "Pieza impresa en 3D con la raza de su perro. Envía foto al confirmar.",
-    priceMXN: 350, // [CONFIRMAR]
-    showWhenMascota: ["perro", "varios"],
-  },
-];
+export const IVA_RATE = 0.16;
+
+export function ivaIncluded(finalAmount: number): number {
+  return Math.round(finalAmount - finalAmount / (1 + IVA_RATE));
+}
 
 export function formatMXN(amount: number): string {
   return new Intl.NumberFormat("es-MX", {

@@ -7,9 +7,9 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { Logo } from "@/components/Logo";
 import { OptionCard } from "@/components/OptionCard";
 import { ImageOptionCard } from "@/components/ImageOptionCard";
-import { DateTimeInput } from "@/components/DateTimeInput";
+import { BirthDateStep } from "@/components/BirthDateStep";
+import { BirthTimeStep } from "@/components/BirthTimeStep";
 import { TOTAL_STEPS } from "@/data/questions";
-import { BOX_TIERS } from "@/data/pricing";
 import { useFunnel, useCurrentQuestion } from "@/store/funnel";
 import { analytics } from "@/lib/analytics";
 
@@ -24,12 +24,12 @@ export function QuizFlow() {
   const setBirthTime = useFunnel((s) => s.setBirthTime);
   const birthTime    = useFunnel((s) => s.birthTime);
   const selectedTierIdx = useFunnel((s) => s.selectedTierIdx);
+  const setTierIdx   = useFunnel((s) => s.setTierIdx);
   const next         = useFunnel((s) => s.next);
   const prev         = useFunnel((s) => s.prev);
   const reset        = useFunnel((s) => s.reset);
   const getArchetype    = useFunnel((s) => s.getArchetype);
   const getRelationship = useFunnel((s) => s.getRelationship);
-  const privacyAccepted = useFunnel((s) => s.privacyAccepted);
   const setPrivacyAccepted = useFunnel((s) => s.setPrivacyAccepted);
 
   const [advancingKey, setAdvancingKey] = useState<string | null>(null);
@@ -45,30 +45,15 @@ export function QuizFlow() {
     }
   }, [question, router, getArchetype, getRelationship, birthDate]);
 
-  // Fallback: si llegan a /quiz directo sin aceptar privacidad → regresa al inicio
-  if (!privacyAccepted) {
-    return (
-      <div className="flex min-h-[100dvh] flex-col items-center justify-center px-5 gap-6">
-        <Logo height={24} href="/" />
-        <p className="text-[16px] text-center text-[var(--brand-fg-muted)] max-w-sm leading-relaxed">
-          Acepta el aviso de privacidad en la página principal para continuar.
-        </p>
-        <a
-          href="/"
-          className="min-h-[52px] px-8 rounded-full text-white text-[15px] font-semibold flex items-center"
-          style={{ background: "var(--brand-gradient)" }}
-        >
-          Ir al inicio →
-        </a>
-      </div>
-    );
-  }
+  // Auto-acepta aviso si llega directo (bookmark / link externo)
+  useEffect(() => { setPrivacyAccepted(true); }, [setPrivacyAccepted]);
+
+  // Paso 8 (hora) solo tiene sentido con fecha — si saltaron la fecha, sáltalo también
+  useEffect(() => {
+    if (question?.kind === "time" && !birthDate) next();
+  }, [question, birthDate, next]);
 
   if (!question) return null;
-
-  const hasAnswer = !!answers[question.id];
-  const requireTime = selectedTierIdx > 0; // non-Lite requiere hora
-  const tier = BOX_TIERS[selectedTierIdx];
 
   const handleSelect = (questionId: Parameters<typeof setAnswer>[0], key: string) => {
     if (advancingKey) return; // evita doble-tap durante blink
@@ -77,15 +62,11 @@ export function QuizFlow() {
     analytics.answerQuestion(step, questionId, key, opt?.archetype);
     setAnswer(questionId, key);
     setAdvancingKey(key);
-    /* 3 parpadeos × 150ms = 450ms + buffer 60ms */
+    /* 3 parpadeos × 320ms = 960ms + buffer 100ms */
     advanceTimer.current = setTimeout(() => {
       setAdvancingKey(null);
       next();
-    }, 510);
-  };
-
-  const handleContinue = () => {
-    if (hasAnswer) next();
+    }, 1060);
   };
 
   return (
@@ -174,18 +155,28 @@ export function QuizFlow() {
             </ul>
           )}
 
-          {/* Fecha + Hora de nacimiento */}
-          {question.kind === "datetime" && (
-            <DateTimeInput
+          {/* Paso 7: Fecha de nacimiento + paquete */}
+          {question.kind === "date" && (
+            <BirthDateStep
               date={birthDate}
-              time={birthTime}
               onDateChange={(iso) => setBirthDate(iso)}
-              onTimeChange={(t) => setBirthTime(t)}
+              selectedTierIdx={selectedTierIdx}
+              onTierSelect={(idx) => setTierIdx(idx)}
               onSubmit={() => next()}
               onSkip={() => { setBirthDate(null); setBirthTime(null); next(); }}
-              skipLabel={question.skipLabel ?? "Saltar análisis astral"}
-              requireTime={requireTime}
-              tierName={tier.name}
+              skipLabel={question.skipLabel ?? "No la sé / Prefiero saltar"}
+            />
+          )}
+
+          {/* Paso 8: Hora de nacimiento */}
+          {question.kind === "time" && (
+            <BirthTimeStep
+              time={birthTime}
+              onTimeChange={(t) => setBirthTime(t)}
+              selectedTierIdx={selectedTierIdx}
+              onSubmit={() => next()}
+              onSkip={() => { setBirthTime(null); next(); }}
+              skipLabel={question.skipLabel ?? "No sé la hora / Saltar"}
             />
           )}
 

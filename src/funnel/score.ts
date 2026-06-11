@@ -32,7 +32,7 @@ export function scoreArchetype(answers: Answers): ScoreResult | null {
   const scores = emptyScores();
 
   for (const q of QUESTIONS) {
-    if (q.kind === "date" || q.kind === "datetime" || !q.options) continue;
+    if (q.kind === "date" || q.kind === "time" || !q.options) continue;
     const picked = answers[q.id];
     if (!picked) continue;
     const opt = q.options.find((o) => o.key === picked);

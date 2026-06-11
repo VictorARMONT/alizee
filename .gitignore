@@ -41,4 +41,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# screenshots de testing local (Playwright / verificación manual)
+/test-*.png
+/fix-verify-*.png
+/.playwright-mcp/
+
+# mockups de referencia (no son assets de producción)
+/Mapa de sistemas.png

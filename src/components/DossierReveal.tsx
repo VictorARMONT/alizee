@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ARCHETYPES } from "@/data/archetypes";
@@ -10,6 +11,7 @@ import { getGeneration } from "@/data/generational";
 import { getNahual } from "@/data/cholqij";
 import { AstrocartographySection } from "@/components/AstrocartographySection";
 import { getAffirmations } from "@/lib/affirmations";
+import { getArchetypeQuote } from "@/data/quotes";
 import { getTotemProfile, SIGN_ELEMENTS } from "@/data/totem";
 import type { ArchetypeKey } from "@/data/questions";
 import type { SunSign } from "@/data/zodiac";
@@ -60,6 +62,25 @@ const ARCHETYPE_GLYPHS: Record<ArchetypeKey, string> = {
   creador:    "✿",
   sabio:      "◎",
 };
+
+/* ── Saju (사주) — elemento dominante por año de nacimiento ── */
+const SAJU_ELEMENTS = [
+  { glyph: "木", name: "Madera", korean: "목" },
+  { glyph: "木", name: "Madera", korean: "목" },
+  { glyph: "火", name: "Fuego",  korean: "화" },
+  { glyph: "火", name: "Fuego",  korean: "화" },
+  { glyph: "土", name: "Tierra", korean: "토" },
+  { glyph: "土", name: "Tierra", korean: "토" },
+  { glyph: "金", name: "Metal",  korean: "금" },
+  { glyph: "金", name: "Metal",  korean: "금" },
+  { glyph: "水", name: "Agua",   korean: "수" },
+  { glyph: "水", name: "Agua",   korean: "수" },
+] as const;
+
+function getSajuElement(birthDate: string) {
+  const year = new Date(birthDate).getFullYear();
+  return SAJU_ELEMENTS[((year - 4) % 10 + 10) % 10];
+}
 
 /* ── Diseño Humano tipo por arquetipo ── */
 const HD_TIPOS: Record<ArchetypeKey, { tipo: string; porcentaje: string; resumen: string }> = {
@@ -164,10 +185,14 @@ export function DossierReveal({
   answers,
   onContinue,
 }: DossierRevealProps) {
+  const [quoteSeed] = useState(() => Math.floor(Math.random() * 250));
+  const quote = getArchetypeQuote(archetypeKey, quoteSeed);
+
   const arch       = ARCHETYPES[archetypeKey];
   const hdTipo     = HD_TIPOS[archetypeKey];
   const signInfo   = sign ? SIGN_INFO[sign] : null;
   const chinese    = birthDate ? getChineseZodiac(birthDate)  : null;
+  const sajuEl     = birthDate ? getSajuElement(birthDate)    : null;
   const kinMaya    = birthDate ? getKinMaya(birthDate)         : null;
   const nahual     = kinMaya  ? getNahual(kinMaya.sealIndex)  : null;
   const element    = sign ? SIGN_ELEMENTS[sign] : "fuego";
@@ -193,6 +218,7 @@ export function DossierReveal({
         archetypeName={arch.name}
         archetypeTagline={arch.tagline}
         essence={arch.essence}
+        quote={quote}
       />
 
       <motion.div
@@ -253,26 +279,10 @@ export function DossierReveal({
               {chinese && (
                 <NatalBadge glyph={chinese.glyph} label={chinese.name} sublabel="Año chino" />
               )}
-              {kinMaya && (
-                <NatalBadge glyph={kinMaya.glyph} label={kinMaya.sealName} sublabel={`Kin ${kinMaya.kin}`} />
+              {sajuEl && (
+                <NatalBadge glyph={sajuEl.glyph} label={sajuEl.name} sublabel={`Saju · ${sajuEl.korean}`} />
               )}
             </div>
-
-            {kinMaya && (
-              <div className="flex items-center gap-2 text-[13px] text-[var(--brand-fg-muted)]">
-                <span
-                  className="text-xs px-2 py-0.5 rounded-full border border-[var(--brand-border)]"
-                  style={{
-                    color: kinMaya.color === "rojo"   ? "#c0392b" :
-                           kinMaya.color === "blanco" ? "#7a6552" :
-                           kinMaya.color === "azul"   ? "#1a5276" : "#B45309",
-                  }}
-                >
-                  {kinMaya.color.charAt(0).toUpperCase() + kinMaya.color.slice(1)}
-                </span>
-                <span>Tono {kinMaya.tone} — {kinMaya.toneName}</span>
-              </div>
-            )}
 
             {signInfo && (
               <p className="text-[14px] leading-relaxed text-[var(--brand-fg-muted)] border-t border-[var(--brand-border)] pt-4">
@@ -298,17 +308,20 @@ export function DossierReveal({
               </div>
             )}
 
-            {/* Diseño Humano — tipo + resumen + guía */}
+            {/* Diseño Humano — guía por arquetipo (no cálculo natal) */}
             <div className="rounded-[var(--radius-md)] border border-[var(--brand-border)] bg-[var(--brand-bg)] px-4 py-4 flex flex-col gap-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--brand-fg-muted)]">Diseño Humano</p>
                 <span
                   className="text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 rounded-full"
-                  style={{ background: "rgba(233,30,140,0.1)", color: "var(--brand-primary)" }}
+                  style={{ background: "rgba(233,30,140,0.06)", color: "var(--brand-fg-muted)" }}
                 >
-                  {hdTipo.tipo}
+                  Lectura de arquetipo
                 </span>
               </div>
+              <p className="text-[11px] text-[var(--brand-fg-muted)] leading-snug border-l-2 pl-3" style={{ borderColor: "rgba(233,30,140,0.25)" }}>
+                Basado en tu arquetipo — no en un cálculo de nacimiento exacto. Tu tipo HD real requiere fecha, hora y lugar.
+              </p>
               <p className="text-[13px] leading-relaxed text-[var(--brand-fg)]">
                 {hdTipo.resumen}
               </p>
@@ -336,7 +349,7 @@ export function DossierReveal({
                 ))}
               </div>
               <p className="text-[11px] text-[var(--brand-fg-muted)] leading-snug border-t border-[var(--brand-border)] pt-2">
-                ⊕ Con la hora exacta de nacimiento desbloqueamos Líneas de Perfil, Variables de Nutrición y el Circuito completo.
+                ⊕ Con hora y lugar exactos calculamos tu tipo HD real con mayor profundidad y detalle personal.
               </p>
             </div>
 
@@ -359,6 +372,7 @@ export function DossierReveal({
                       <div>
                         <span className="text-[13px] font-semibold text-[var(--brand-fg)]">{s.name}</span>
                         <span className="text-[11px] text-[var(--brand-fg-muted)] ml-1">— {s.reason}</span>
+                        <p className="text-[10px] italic text-[var(--brand-fg-muted)] opacity-75 mt-0.5">{s.source}</p>
                       </div>
                     </div>
                   ))}
@@ -392,7 +406,7 @@ export function DossierReveal({
 
         {/* ══ CAPA 3: NAHUAL / CHOLQ'IJ (solo si hay fecha) ══ */}
         {nahual && (
-          <DossierCard label={`Nahual ${nahual.name} · Cholq'ij`} delay={60}>
+          <DossierCard label={`Nahual ${nahual.name} · Calendario Maya`} delay={60}>
             <div className="flex items-start gap-3">
               <span className="text-[32px] leading-none shrink-0">{nahual.symbol}</span>
               <div className="flex flex-col gap-1">
@@ -418,7 +432,7 @@ export function DossierReveal({
               ))}
             </div>
             <div className="rounded-[var(--radius-md)] border border-[var(--brand-border)] bg-[var(--brand-bg)] px-3 py-3 flex flex-col gap-1">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--brand-fg-muted)]">Sombra a integrar</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--brand-fg-muted)]">Punto de crecimiento</p>
               <p className="text-[12px] leading-snug text-[var(--brand-fg)]">{nahual.shadow}</p>
             </div>
             <div className="flex flex-col gap-2 border-t border-[var(--brand-border)] pt-4">

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
-import { Footer } from "@/components/Footer";
+import Script from "next/script";
+import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { ProductSchemaScript } from "@/components/ProductSchema";
 import { BackgroundLayers } from "@/components/BackgroundLayers";
 import "./globals.css";
@@ -25,33 +26,36 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://alizee.mx"),
-  title: "alizee — El regalo perfecto",
+  title: {
+    default: "Regalo de Día del Padre personalizado | ALIZEE México",
+    template: "%s | ALIZEE",
+  },
   description:
-    "Un regalo ritual, hecho a su medida. Análisis personalizado + objeto impreso en 3D.",
+    "Diseña el regalo perfecto para papá: box ritual personalizado según su personalidad, con tótem 3D, piedra natural y vela de copal. Envíos a todo México.",
   openGraph: {
-    title: "alizee — El regalo perfecto",
-    description: "Un regalo ritual, hecho a su medida. Análisis personalizado + objeto impreso en 3D.",
+    title: "Regalo de Día del Padre personalizado | ALIZEE México",
+    description: "Box ritual personalizado según su personalidad: tótem 3D, piedra natural y vela de copal. Pide antes del 17 de junio.",
     url: "https://alizee.mx",
-    siteName: "alizee",
+    siteName: "ALIZEE",
     locale: "es_MX",
     type: "website",
     images: [
       {
-        url: "/logo-primary-crop.png",
+        url: "/portada-hero.jpg",
         width: 1200,
         height: 630,
-        alt: "alizee — El regalo perfecto",
+        alt: "ALIZEE — Box ritual personalizado para Día del Padre",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "alizee — El regalo perfecto",
-    description: "Un regalo ritual, hecho a su medida.",
-    images: ["/logo-primary-crop.png"],
+    title: "Regalo de Día del Padre personalizado | ALIZEE",
+    description: "Box ritual según su personalidad: tótem 3D, piedra y vela de copal. Envíos a todo México.",
+    images: ["/portada-hero.jpg"],
   },
   alternates: {
-    canonical: "https://alizee.mx",
+    canonical: "./",
   },
   icons: {
     icon: [
@@ -72,6 +76,7 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID; // GA4 Measurement ID (G-…) — sin valor, no carga gtag
   return (
     <html
       lang="es-MX"
@@ -80,31 +85,26 @@ export default function RootLayout({
       <head>
         {/* Schema JSON-LD */}
         <ProductSchemaScript />
-
-        {/* GA4 Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-XXXXXXXXXX', {
-                page_path: window.location.pathname,
-                anonymize_ip: true,
-              });
-              window.__analyticsDispatch = (event) => {
-                const { name, ...params } = event;
-                gtag('event', name, params);
-              };
-            `,
-          }}
-        />
       </head>
       <body className="min-h-full flex flex-col">
         <BackgroundLayers />
         <div className="flex-1 relative z-10">{children}</div>
-        <Footer />
+        <ConditionalFooter />
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">{`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}', { page_path: window.location.pathname, anonymize_ip: true });
+              window.__analyticsDispatch = (event) => { var n=event.name,p=Object.assign({},event); delete p.name; gtag('event',n,p); };
+            `}</Script>
+          </>
+        )}
       </body>
     </html>
   );

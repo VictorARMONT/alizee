@@ -3,12 +3,12 @@
  *
  * Q1  relación      → kind: "single"    (¿para quién?)
  * Q2  proyección    → kind: "image"     (grid 2×2, proyección visual)
- * Q3  decision      → kind: "single"    (conductual — Big Five)
+ * Q3  decision      → kind: "image"     (grid 2×2, lugar en su elemento)
  * Q4  presion       → kind: "single"    (estrés — Big Five, muy diagnóstico)
  * Q5  valores       → kind: "single"    (Schwartz; tiebreaker de arquetipo)
  * Q6  mascotas      → kind: "single"    (cross-sell: escultura 3D perro / altar)
- * Q7  nacimiento    → kind: "datetime"  (opcional; desbloquea análisis astral)
- * Q8  presupuesto   → kind: "single"    (rango de inversión → pre-selecciona tier del box)
+ * Q7  nacimiento    → kind: "date"      (opcional; muestra Signos + selección de paquete)
+ * Q8  hora          → kind: "time"      (opcional; afina análisis avanzado)
  */
 
 export type ArchetypeKey = "lider" | "explorador" | "creador" | "sabio";
@@ -21,7 +21,7 @@ export type QuestionId =
   | "valores"
   | "mascotas"
   | "fechaNacimiento"
-  | "presupuesto";
+  | "horaNacimiento";
 
 export interface Option {
   key: string;
@@ -32,7 +32,7 @@ export interface Option {
   caption?: string;
 }
 
-export type QuestionKind = "single" | "image" | "date" | "datetime";
+export type QuestionKind = "single" | "image" | "date" | "time";
 
 export interface Question {
   id: QuestionId;
@@ -102,24 +102,39 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q3: TOMA DE DECISIONES (Big Five: Conscientiousness + Extraversión) ── */
+  /* ── Q3: LUGAR EN SU ELEMENTO (proyección visual de entorno) ── */
   {
     id: "decision",
-    kind: "single",
+    kind: "image",
     index: 3,
     total: TOTAL,
     kicker: "Paso 3 de 8",
-    prompt: "Cuando tiene que tomar una decisión importante, ¿cómo la toma?",
-    subtext: "Piensa en cómo actúa, no en cómo le gustaría actuar.",
+    prompt: "¿En cuál de estos lugares se sentiría más en su elemento?",
     options: [
-      { key: "rapido",      archetype: "lider",
-        label: "Evalúa rápido y actúa — no necesita que todos estén de acuerdo" },
-      { key: "instinto",    archetype: "explorador",
-        label: "Confía en el instinto y se mueve aunque no tenga todo claro" },
-      { key: "analiza",     archetype: "creador",
-        label: "Analiza los detalles hasta tener algo concreto en la mano" },
-      { key: "espera",      archetype: "sabio",
-        label: "Espera. Observa más de lo que pregunta. Decide cuando ya es obvio" },
+      {
+        key: "oficina",    archetype: "lider",
+        label: "Una oficina con vista",
+        caption: "Altura, perspectiva, decisiones",
+        imageUrl: "/quiz/q3-lider.webp",
+      },
+      {
+        key: "carretera",  archetype: "explorador",
+        label: "Una carretera abierta",
+        caption: "Horizonte, movimiento, libertad",
+        imageUrl: "/quiz/q3-explorador.webp",
+      },
+      {
+        key: "taller",     archetype: "creador",
+        label: "Un taller propio",
+        caption: "Herramientas, oficio, manos",
+        imageUrl: "/quiz/q3-creador.webp",
+      },
+      {
+        key: "rincon",     archetype: "sabio",
+        label: "Un rincón silencioso",
+        caption: "Calma, lectura, profundidad",
+        imageUrl: "/quiz/q3-sabio.webp",
+      },
     ],
   },
 
@@ -180,34 +195,30 @@ export const QUESTIONS: Question[] = [
     ],
   },
 
-  /* ── Q7: FECHA + HORA DE NACIMIENTO (opcional) ── */
+  /* ── Q7: FECHA DE NACIMIENTO + PAQUETE (opcional) ── */
   {
     id: "fechaNacimiento",
-    kind: "datetime",
+    kind: "date",
     index: 7,
     total: TOTAL,
     kicker: "Paso 7 de 8",
-    prompt: "¿Conoces su fecha y hora de nacimiento?",
-    subtext: "Desbloquea el análisis astral completo de tu paquete.",
+    prompt: "¿Conoces su fecha de nacimiento?",
+    subtext: "Desbloquea sus signos y elige el paquete de su regalo.",
     skipLabel: "No la sé / Prefiero saltar",
   },
 
-  /* ── Q8: PRESUPUESTO → pre-selecciona tier del box ── */
+  /* ── Q8: HORA DE NACIMIENTO (opcional; afina análisis avanzado) ── */
   {
-    id: "presupuesto",
-    kind: "single",
+    id: "horaNacimiento",
+    kind: "time",
     index: 8,
     total: TOTAL,
     kicker: "Paso 8 de 8",
-    prompt: "¿Cuánto quieres invertir en su regalo?",
-    subtext: "Te mostramos las opciones que tienen más sentido para tu presupuesto.",
-    options: [
-      { key: "esencial",  glyph: "◇", label: "Algo con intención — hasta $600" },
-      { key: "ritual",    glyph: "◆", label: "Un regalo con peso — hasta $900" },
-      { key: "ceremonia", glyph: "✦", label: "Que sea memorable — hasta $2,000" },
-      { key: "legado",    glyph: "★", label: "El regalo de su vida — sin límite" },
-    ],
+    prompt: "¿A qué hora nació?",
+    subtext: "La hora exacta afina su análisis astral. Si no la sabes, puedes saltar este paso.",
+    skipLabel: "No sé la hora / Saltar",
   },
+
 ];
 
 export const TOTAL_STEPS = TOTAL;

@@ -10,7 +10,7 @@ import { QUESTIONS, TOTAL_STEPS } from "@/data/questions";
 import { scoreArchetype } from "@/funnel/score";
 import { getSunSign, type SunSign } from "@/data/zodiac";
 import type { ProductSlot } from "@/data/archetypes";
-import { BOX_TIERS, DEFAULT_TIER_IDX, UPGRADES } from "@/data/pricing";
+import { BOX_TIERS, DEFAULT_TIER_IDX } from "@/data/pricing";
 
 export type Answers = Partial<Record<QuestionId, string>>;
 
@@ -35,9 +35,6 @@ interface FunnelState {
   /** tier de box seleccionado (índice en BOX_TIERS) */
   selectedTierIdx: number;
 
-  /** upgrades: id → seleccionado */
-  upgrades: Record<string, boolean>;
-
   /** email capturado en checkout */
   email: string | null;
 
@@ -60,7 +57,6 @@ interface FunnelState {
   setAncla: (slot: ProductSlot) => void;
   setComplemento: (slot: ProductSlot) => void;
   setTierIdx: (i: number) => void;
-  toggleUpgrade: (id: string) => void;
 
   reset: () => void;
 
@@ -70,7 +66,6 @@ interface FunnelState {
   getRelationship: () => string | null;
   isDone: () => boolean;
   getTotal: () => number;
-  getUpgradesTotal: () => number;
 }
 
 const initial = {
@@ -82,7 +77,6 @@ const initial = {
   selectedAncla: null as ProductSlot | null,
   selectedComplemento: null as ProductSlot | null,
   selectedTierIdx: DEFAULT_TIER_IDX,
-  upgrades: {} as Record<string, boolean>,
   email: null as string | null,
   privacyAccepted: false as boolean,
 };
@@ -93,19 +87,7 @@ export const useFunnel = create<FunnelState>()(
       ...initial,
 
   setAnswer: (id, key) =>
-    set((s) => {
-      const newAnswers = { ...s.answers, [id]: key };
-      if (id === "presupuesto") {
-        const tierMap: Record<string, number> = {
-          esencial: 0, ritual: 1, ceremonia: 2, legado: 3,
-        };
-        const tierIdx = tierMap[key];
-        if (tierIdx !== undefined) {
-          return { answers: newAnswers, selectedTierIdx: tierIdx };
-        }
-      }
-      return { answers: newAnswers };
-    }),
+    set((s) => ({ answers: { ...s.answers, [id]: key } })),
 
   setBirthDate: (iso) => set({ birthDate: iso }),
   setBirthTime: (t) => set({ birthTime: t }),
@@ -138,11 +120,6 @@ export const useFunnel = create<FunnelState>()(
 
   setTierIdx: (i) => set({ selectedTierIdx: Math.max(0, Math.min(i, BOX_TIERS.length - 1)) }),
 
-  toggleUpgrade: (id) =>
-    set((s) => ({
-      upgrades: { ...s.upgrades, [id]: !s.upgrades[id] },
-    })),
-
   reset: () => set({ ...initial }),
 
   getArchetype: () => scoreArchetype(get().answers)?.winner ?? null,
@@ -153,15 +130,8 @@ export const useFunnel = create<FunnelState>()(
 
   isDone: () => get().step >= TOTAL_STEPS,
 
-  getUpgradesTotal: () => {
-    const active = get().upgrades;
-    return UPGRADES.filter((u) => active[u.id]).reduce(
-      (sum, u) => sum + u.priceMXN,
-      0
-    );
-  },
-
-  getTotal: () => BOX_TIERS[get().selectedTierIdx].priceMXN + get().getUpgradesTotal(),
+  /** Total final (precios ya incluyen IVA) */
+  getTotal: () => BOX_TIERS[get().selectedTierIdx].priceMXN,
     }),
     {
       name: "alizee-funnel",

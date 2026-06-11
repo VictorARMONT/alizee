@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 
 /**
- * Fecha-tope de pedido. PLACEHOLDER hasta que ops confirme tiempos reales
- * de impresión 3D + ensamblaje + envío.
- *  [CONFIRMAR] — cambia este ISO y todo lo demás se ajusta solo.
+ * Fecha-tope de pedido. Confirmada por Victor (10 jun 2026).
+ * Cambia este ISO y todo lo demás se ajusta solo.
  */
-export const ORDER_DEADLINE_ISO = "2026-06-15T23:59:00-06:00"; // CDMX (UTC-6)
+export const ORDER_DEADLINE_ISO = "2026-06-17T23:59:00-06:00"; // CDMX (UTC-6)
 
 interface TimeLeft {
   days: number;

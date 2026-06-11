@@ -91,10 +91,10 @@
 
 @keyframes az-option-blink {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
+  50%       { opacity: 0.45; }
 }
 .az-option-blink {
-  animation: az-option-blink 150ms ease-in-out 3 forwards;
+  animation: az-option-blink 320ms ease-in-out 3 forwards;
   pointer-events: none;
 }
 

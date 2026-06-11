@@ -1,5 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Logo } from "@/components/Logo";
+
+// noindex mientras no haya catálogo: página casi vacía indexada daña el sitio entero (thin content)
+export const metadata: Metadata = {
+  title: "Bolsas de lujo",
+  robots: { index: false, follow: true },
+};
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "523349571689";
 const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola, me interesan las bolsas de lujo de ALIZEE. ¿Me puedes dar más información?")}`;

@@ -5,6 +5,7 @@ import { CountdownServer } from "@/components/CountdownServer";
 import { Logo } from "@/components/Logo";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { PrivacyBanner } from "@/components/PrivacyBanner";
+import { QuizCTA } from "@/components/QuizCTA";
 
 export const revalidate = 300; // revalida cada 5 min
 
@@ -25,13 +26,12 @@ export default async function HomePage() {
           <Link href="/joyeria" className="text-[13px] text-[var(--brand-fg-muted)] hover:text-[var(--brand-fg)] transition-colors hidden sm:block">
             Joyería
           </Link>
-          <Link
-            href="/quiz"
+          <QuizCTA
             className="text-[13px] font-semibold px-4 py-2 rounded-full text-white"
             style={{ background: "linear-gradient(90deg, #F97316 0%, #E91E8C 100%)" }}
           >
             Test de personalidad
-          </Link>
+          </QuizCTA>
         </nav>
       </header>
 
@@ -56,7 +56,7 @@ export default async function HomePage() {
               className="self-start text-[11px] font-semibold uppercase tracking-[0.22em] px-3 py-1 rounded-full"
               style={{ background: "rgba(180,20,90,0.35)", color: "#fff" }}
             >
-              Día del Padre · 21 de junio
+              Edición Día del Padre · 21 de junio
             </span>
             <h1 className="text-[38px] leading-[1.06] font-bold tracking-tight text-white"
               style={{ fontFamily: "var(--font-display, inherit)" }}
@@ -64,23 +64,34 @@ export default async function HomePage() {
               El regalo que sí<br />
               <em className="az-em not-italic" style={{ color: "#F9A8D4" }}>lo va a sorprender.</em>
             </h1>
-            <p className="text-[16px] leading-relaxed text-white/75 max-w-md">
-              Responde 7 preguntas sobre cómo es él. Nosotros armamos su box.
+            <p className="text-[16px] leading-relaxed text-white/80 max-w-md">
+              Responde un test de 2 minutos sobre tu papá y diseñamos un <strong className="text-white font-semibold">box ritual hecho a su medida</strong>: tótem en 3D, piedra natural y vela de copal.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mt-1">
-              <Link
-                href="/quiz"
+              <QuizCTA
                 className="inline-flex items-center justify-center min-h-[52px] px-7 rounded-full text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ background: "linear-gradient(90deg, #F97316 0%, #E91E8C 100%)" }}
               >
-                Test de personalidad →
-              </Link>
+                Crear su regalo →
+              </QuizCTA>
               <Link
                 href="/joyeria"
                 className="inline-flex items-center justify-center min-h-[52px] px-7 rounded-full text-[16px] font-semibold border-2 border-white/60 text-white transition-colors hover:border-white"
               >
                 Ver catálogo
               </Link>
+            </div>
+            {/* Trust markers inline */}
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-2 text-[12px] text-white/70">
+              <span className="inline-flex items-center gap-1.5">
+                <span style={{ color: "#F9A8D4" }}>✓</span> Envío a todo México
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span style={{ color: "#F9A8D4" }}>✓</span> Hecho a mano
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span style={{ color: "#F9A8D4" }}>✓</span> Listo para regalar
+              </span>
             </div>
           </div>
         </section>
@@ -109,13 +120,39 @@ export default async function HomePage() {
             <p className="text-[14px] text-white/85 leading-relaxed max-w-sm">
               Box ritual personalizado según su arquetipo. Análisis de patrones numéricos incluido.
             </p>
-            <Link
-              href="/quiz"
+            <QuizCTA
               className="self-start min-h-[48px] px-6 rounded-full flex items-center text-[15px] font-semibold bg-white transition-opacity hover:opacity-90"
               style={{ color: "var(--brand-primary)" }}
             >
               Crear su regalo →
-            </Link>
+            </QuizCTA>
+          </div>
+        </section>
+        </ScrollReveal>
+
+        {/* ── CÓMO FUNCIONA ── */}
+        <ScrollReveal delay={80}>
+        <section className="px-5 mt-10 flex flex-col gap-5">
+          <SectionLabel>Cómo funciona</SectionLabel>
+          <h2 className="text-[24px] font-bold tracking-tight leading-tight text-[var(--brand-fg)] -mt-1">
+            Tres pasos para el regalo perfecto.
+          </h2>
+          <div className="flex flex-col gap-3">
+            <StepCard
+              n="1"
+              title="Responde el test"
+              detail="6 preguntas sobre su personalidad. Te toma menos de 2 minutos."
+            />
+            <StepCard
+              n="2"
+              title="Revelamos su arquetipo"
+              detail="Cruzamos su signo, año chino, Saju coreano y más para descubrir quién es realmente."
+            />
+            <StepCard
+              n="3"
+              title="Recibe su box ritual"
+              detail="Tótem impreso en 3D, piedra natural y vela de copal — empacados y listos para regalar."
+            />
           </div>
         </section>
         </ScrollReveal>
@@ -128,22 +165,22 @@ export default async function HomePage() {
             <CategoryCard
               href="/quiz"
               emoji="✦"
-              title="Diseño de Regalo"
-              detail="Box personalizado según su arquetipo y análisis de patrones."
+              title="Diseño de regalo"
+              detail="Box ritual personalizado según su personalidad y arquetipo."
               tag="Exclusivo"
             />
             <CategoryCard
               href="/joyeria"
               emoji="◈"
               title="Joyería"
-              detail="Piezas seleccionadas. Plata, oro y piedras semipreciosas."
+              detail="Piezas seleccionadas en plata, oro y piedras semipreciosas."
               tag="+Vendidos"
             />
             <CategoryCard
               href="/quiz"
               emoji="◉"
-              title="Mistery Box"
-              detail="Un box sorpresa curado según tu arquetipo. Contenido revelado al recibirlo."
+              title="Mystery Box"
+              detail="Un box sorpresa curado según su arquetipo. Se revela al abrirlo."
               tag="Nuevo"
             />
           </div>
@@ -183,10 +220,10 @@ export default async function HomePage() {
           <section className="px-5 mt-10 flex flex-col gap-4">
             <SectionLabel>Por qué ALIZEE</SectionLabel>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <TrustCard icon="✦" title="Personalización real" detail="No es una tarjeta genérica. Cada regalo responde a quién es la persona." />
-              <TrustCard icon="◈" title="Análisis de patrones" detail="Cruzamos 7 tipos de análisis para identificar el regalo exacto." />
-              <TrustCard icon="◉" title="Envío a todo México" detail="Empaque cuidado, entrega puntual. Listo para regalar." />
-              <TrustCard icon="◊" title="WhatsApp directo" detail="Sin formularios largos. Compra y resuelve dudas en un mensaje." />
+              <TrustCard icon="✦" title="Personalización real" detail="No es una tarjeta genérica. Cada regalo responde a quién es él, no a un catálogo." />
+              <TrustCard icon="◈" title="Análisis de su personalidad" detail="Cruzamos su arquetipo, signo, año chino y Saju para acertar con el regalo." />
+              <TrustCard icon="◉" title="Envío a todo México" detail="Empaque cuidado y entrega puntual antes del Día del Padre." />
+              <TrustCard icon="◊" title="Atención por WhatsApp" detail="Sin formularios largos. Compra y resuelve dudas en un solo mensaje." />
             </div>
           </section>
         </ScrollReveal>
@@ -213,6 +250,26 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <p className="text-[11px] uppercase tracking-[0.26em] font-semibold" style={{ color: "var(--brand-primary)" }}>
       {children}
     </p>
+  );
+}
+
+function StepCard({ n, title, detail }: { n: string; title: string; detail: string }) {
+  return (
+    <div
+      className="flex gap-4 items-start rounded-[var(--radius-md)] border bg-[var(--brand-surface)] p-4"
+      style={{ borderColor: "var(--brand-border)" }}
+    >
+      <span
+        className="shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-[15px] font-bold text-white tabular-nums"
+        style={{ background: "linear-gradient(135deg, #F97316 0%, #E91E8C 100%)" }}
+      >
+        {n}
+      </span>
+      <div className="flex-1 pt-0.5">
+        <p className="text-[15px] font-semibold text-[var(--brand-fg)]">{title}</p>
+        <p className="text-[13px] leading-relaxed text-[var(--brand-fg-muted)] mt-0.5">{detail}</p>
+      </div>
+    </div>
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useFunnel, FLOW_STEPS } from "@/store/funnel";
@@ -12,14 +12,17 @@ import { StickyFooterSummary } from "@/components/StickyFooterSummary";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Logo } from "@/components/Logo";
 import { analytics } from "@/lib/analytics";
-import { BOX_TIERS, UPGRADES } from "@/data/pricing";
+import { BOX_TIERS } from "@/data/pricing";
 import { getTotemProfile } from "@/data/totem";
 import { getChineseZodiac, getKinMaya } from "@/data/birthProfile";
 import { SIGN_INFO } from "@/data/zodiac";
 import { QUESTIONS } from "@/data/questions";
+import { SLOT_LABELS } from "@/components/CheckoutSummary";
 
 export default function ArmarPage() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const archetypeKey  = useFunnel((s) => s.getArchetype());
   const answers       = useFunnel((s) => s.answers);
@@ -28,7 +31,6 @@ export default function ArmarPage() {
   const birthDate     = useFunnel((s) => s.birthDate);
   const birthTime     = useFunnel((s) => s.birthTime);
   const flowStep      = useFunnel((s) => s.flowStep);
-  const upgrades      = useFunnel((s) => s.upgrades);
   const email         = useFunnel((s) => s.email);
   const total         = useFunnel((s) => s.getTotal());
 
@@ -39,10 +41,10 @@ export default function ArmarPage() {
   const setEmail        = useFunnel((s) => s.setEmail);
   const reset           = useFunnel((s) => s.reset);
 
-  // Sin arquetipo = no completó quiz → redirigir
+  // Sin arquetipo después de montar (storage leído) → redirigir
   useEffect(() => {
-    if (!archetypeKey) router.replace("/");
-  }, [archetypeKey, router]);
+    if (mounted && !archetypeKey) router.replace("/");
+  }, [mounted, archetypeKey, router]);
 
   // ViewRecommendation — solo al entrar en reveal (1 vez)
   const revealFired = useRef(false);
@@ -53,7 +55,7 @@ export default function ArmarPage() {
     }
   }, [flowStep, archetypeKey, sign]);
 
-  if (!archetypeKey) return null;
+  if (!mounted || !archetypeKey) return null;
 
   const arch = ARCHETYPES[archetypeKey];
   const flowIdx = FLOW_STEPS.indexOf(flowStep);
@@ -65,10 +67,7 @@ export default function ArmarPage() {
     if (flowStep === "checkout") return;
 
     if (flowStep === "configurator") {
-      const activeUpgrades = UPGRADES
-        .filter((u) => upgrades[u.id])
-        .map((u) => u.id);
-      analytics.addToCart(archetypeKey!, total, activeUpgrades);
+      analytics.addToCart(archetypeKey!, total, []);
     }
 
     nextFlowStep();
@@ -76,24 +75,12 @@ export default function ArmarPage() {
 
   function handleCheckout(address: DeliveryAddress) {
     const tier = BOX_TIERS[selectedTierIdx];
-    const activeUpgrades = UPGRADES.filter((u) => upgrades[u.id]).map((u) => u.id);
 
     const RELATIONSHIP_COPY: Record<string, string> = {
       papa: "Mi papá", abuelo: "Mi abuelo", pareja: "Mi esposo o pareja",
       suegro: "Mi suegro", otra: "Otra figura paterna",
     };
     const relationLabel = relationship ? (RELATIONSHIP_COPY[relationship] ?? relationship) : "—";
-
-    const upgradeLines = activeUpgrades.length > 0
-      ? activeUpgrades.map((id) => {
-          const u = UPGRADES.find((x) => x.id === id);
-          return `• ${u?.label ?? id}`;
-        }).join("\n")
-      : null;
-
-    const refLine = address.references.trim()
-      ? `\n📍 Ref: ${address.references.trim()}`
-      : "";
 
     const boxContents = tier.includes.map((item) => `• ${item}`).join("\n");
     const formatMXN = (n: number) =>
@@ -129,7 +116,6 @@ export default function ArmarPage() {
       answers.presion      && `• Bajo presión    → ${getLabel("presion",      answers.presion)}`,
       answers.valores      && `• Valora en otros → ${getLabel("valores",      answers.valores)}`,
       answers.mascotas     && `• Animales        → ${getLabel("mascotas",     answers.mascotas)}`,
-      answers.presupuesto  && `• Presupuesto     → ${getLabel("presupuesto",  answers.presupuesto)}`,
     ].filter(Boolean).join("\n");
 
     const sistemaLines = [
@@ -143,9 +129,9 @@ export default function ArmarPage() {
 
     const piedrasLines = totemProfile
       ? [
-          `• Mes: ${totemProfile.stone.primary.name} — ${totemProfile.stone.primary.reason}`,
-          `• Signo: ${totemProfile.stone.secondary.name} — ${totemProfile.stone.secondary.reason}`,
-          `• Intención: ${totemProfile.stone.intention.name} — ${totemProfile.stone.intention.reason}`,
+          `• Mes: ${totemProfile.stone.primary.name} — ${totemProfile.stone.primary.reason} [${totemProfile.stone.primary.source}]`,
+          `• Signo: ${totemProfile.stone.secondary.name} — ${totemProfile.stone.secondary.reason} [${totemProfile.stone.secondary.source}]`,
+          `• Intención: ${totemProfile.stone.intention.name} — ${totemProfile.stone.intention.reason} [${totemProfile.stone.intention.source}]`,
         ].join("\n")
       : `• ${arch.piedra.label} — ${arch.piedra.detail ?? ""}`;
 
@@ -161,11 +147,18 @@ export default function ArmarPage() {
       `────────────────────`,
       `📦 *Contenido del box:*`,
       boxContents,
-      ...(upgradeLines ? [`Extras:\n${upgradeLines}`] : []),
       `────────────────────`,
       `🚚 *Dirección de entrega:*`,
-      `${address.street}, Col. ${address.colonia}`,
-      `${address.cityState} CP ${address.zip}${refLine}`,
+      address.formattedAddress
+        ? address.formattedAddress
+        : `${address.street}, Col. ${address.colonia}, ${address.cityState} CP ${address.zip}`,
+      ...(address.references.trim() ? [`📍 Ref: ${address.references.trim()}`] : []),
+      ...(address.lat && address.lng
+        ? [`🗺 Maps: https://maps.google.com/?q=${address.lat},${address.lng}`]
+        : []),
+      ...(address.deliveryTime
+        ? [`🕐 Horario: ${SLOT_LABELS[address.deliveryTime] ?? address.deliveryTime}`]
+        : []),
       `────────────────────`,
       `🔧 *FICHA DE CREACIÓN*`,
       `Pieza 3D: ${piezaNote}`,
@@ -187,7 +180,7 @@ export default function ArmarPage() {
     const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "523349571689";
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 
-    analytics.initiateCheckout(archetypeKey!, total, activeUpgrades);
+    analytics.initiateCheckout(archetypeKey!, total, []);
     window.location.href = waUrl;
   }
 
@@ -243,22 +236,32 @@ export default function ArmarPage() {
             )}
 
             {flowStep === "configurator" && (
-              <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-6">
+                <div
+                  className="relative w-full aspect-[16/7] rounded-[var(--radius-md)] overflow-hidden border"
+                  style={{ borderColor: "var(--brand-border)" }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/quiz/q7-${archetypeKey}.webp`}
+                    alt={`Material del arquetipo ${arch.name}`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--brand-primary)]">
                     {arch.name}
                   </p>
-                  <h1 className="text-[38px] font-semibold tracking-tight mt-2 leading-tight">
-                    Elige su versión.
+                  <h1 className="text-[34px] font-semibold tracking-tight mt-2 leading-tight">
+                    Elige su box.
                   </h1>
                   <p className="text-[14px] text-[var(--brand-fg-muted)] mt-2 leading-relaxed">
-                    El contenido exacto del box lo armamos nosotros con base en su análisis.
+                    El arquetipo determina el contenido. El nivel, la profundidad.
                   </p>
                 </div>
                 <BoxTierSelector
                   selectedIdx={selectedTierIdx}
                   onSelect={setTierIdx}
-                  archetypeName={arch.name}
                 />
               </div>
             )}
@@ -267,7 +270,6 @@ export default function ArmarPage() {
               <CheckoutSummary
                 archetypeKey={archetypeKey}
                 selectedTierIdx={selectedTierIdx}
-                upgradesSelected={upgrades}
                 total={total}
                 initialEmail={email}
                 onEmailSave={setEmail}

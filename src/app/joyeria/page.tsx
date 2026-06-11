@@ -1,7 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { fetchShopifyCollection } from "@/lib/shopify";
 import { ProductCard } from "@/components/ProductCard";
 import { Logo } from "@/components/Logo";
+
+export const metadata: Metadata = {
+  title: "Joyería para regalo — plata y piedras semipreciosas",
+  description:
+    "Joyería seleccionada para regalar: piezas en plata, oro y piedras semipreciosas. Las más vendidas, con envío a todo México.",
+};
 
 export const revalidate = 300;
 

@@ -37,10 +37,10 @@ export function Footer() {
           <Link href="/aviso-de-privacidad" className="text-[var(--brand-fg-muted)] hover:text-[var(--brand-primary)]">
             Aviso de Privacidad
           </Link>
-          <Link href="#" className="text-[var(--brand-fg-muted)] hover:text-[var(--brand-primary)]">
+          <Link href="/envios-y-devoluciones" className="text-[var(--brand-fg-muted)] hover:text-[var(--brand-primary)]">
             Política de Envíos y Devoluciones
           </Link>
-          <Link href="#" className="text-[var(--brand-fg-muted)] hover:text-[var(--brand-primary)]">
+          <Link href="/terminos" className="text-[var(--brand-fg-muted)] hover:text-[var(--brand-primary)]">
             Términos de Servicio
           </Link>
         </div>

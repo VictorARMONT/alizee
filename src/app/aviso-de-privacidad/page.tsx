@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
 
         <section className="mb-8">
           <p className="text-gray-600 text-sm">
-            <strong>ALIZEE</strong> (en adelante "El Regalo Perfecto"), es responsable del
+            <strong>ALIZEE</strong> (en adelante &ldquo;El Regalo Perfecto&rdquo;), es responsable del
             tratamiento de los datos personales que nos proporciones, conforme a la Ley
             Federal de Protección de Datos Personales en Posesión de los Particulares
             (LFPDPPP).

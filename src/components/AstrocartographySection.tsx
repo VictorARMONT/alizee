@@ -35,7 +35,7 @@ const TRAVEL_STYLE: Record<ArchetypeKey, { style: string; seeks: string; avoidPr
     style: "Viaja para crear, no para consumir. Necesita tiempo libre y espacio para producir.",
     seeks: "Talleres, estudios de artistas, lugares con artesanía local, tiempo para hacer algo con las manos.",
     avoidPrep: [
-      "Si debes ir: lleva un proyecto contigo. El Creador en contextos de alta presión produce mejor cuando tiene una obra entre manos.",
+      "Si debes ir: lleva un proyecto contigo. El Inventor en contextos de alta presión produce mejor cuando tiene una obra entre manos.",
       "Busca el taller, el artesano, la cocina local — conéctate con quienes hacen cosas reales en ese lugar.",
       "Define claramente tu tiempo personal antes de llegar. Sin espacio creativo, se agota.",
     ],
@@ -69,7 +69,7 @@ export function AstrocartographySection({ birthDate, birthTime, sunSign, archety
             Astrocartografía · Mapa de viaje
           </p>
           <p className="text-[13px] text-[var(--brand-fg-muted)] leading-snug">
-            40 líneas planetarias · lugares que amplían y que limitan
+            Lugares del mundo que amplifican tu energía — y los que la agotan
           </p>
         </div>
         <span
@@ -96,7 +96,7 @@ export function AstrocartographySection({ birthDate, birthTime, sunSign, archety
             {result.rulingPlanetSymbol}
           </span>
           <p className="text-[14px] font-semibold text-[var(--brand-fg)]">
-            {result.rulingPlanetName} — planeta regente natal
+            {result.rulingPlanetName} — tu planeta guía
           </p>
         </div>
         <p className="text-[12px] text-[var(--brand-fg-muted)] leading-snug">
@@ -121,8 +121,7 @@ export function AstrocartographySection({ birthDate, birthTime, sunSign, archety
 
       {/* Footer note */}
       <p className="text-[10px] text-[var(--brand-fg-muted)] leading-relaxed border-t border-[var(--brand-border)] pt-4">
-        Astrocartografía calculada sobre planeta regente natal, hora de nacimiento y línea angular dominante.
-        Los lugares no determinan el destino — amplían o atenúan energías ya presentes en el perfil.
+        Análisis basado en tu fecha y hora de nacimiento. Los lugares no determinan el destino — amplifican o atenúan energías que ya están en tu perfil.
       </p>
     </motion.div>
   );
