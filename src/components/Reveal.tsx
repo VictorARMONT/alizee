@@ -188,6 +188,17 @@ export function Reveal({
       >
         {essence}
       </motion.p>
+
+      {/* Remate de marca */}
+      <motion.p
+        className="text-[19px] leading-snug max-w-xs pt-2"
+        style={{ color: "var(--brand-fg)", fontFamily: "var(--font-display, inherit)" }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={phase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+      >
+        No es un regalo. <em className="not-italic" style={{ color: "var(--brand-primary)" }}>Es un mapa de quién es.</em>
+      </motion.p>
     </div>
   );
 }
