@@ -20,19 +20,8 @@ export default async function HomePage() {
     <div className="flex flex-col items-center bg-white min-h-[100dvh]">
 
       {/* ── HEADER ── */}
-      <header className="w-full max-w-2xl mx-auto px-5 pt-6 pb-3 flex items-center justify-between">
-        <Logo height={20} />
-        <nav className="flex items-center gap-4">
-          <Link href="/joyeria" className="text-[13px] text-[var(--brand-fg-muted)] hover:text-[var(--brand-fg)] transition-colors hidden sm:block">
-            Joyería
-          </Link>
-          <QuizCTA
-            className="text-[13px] font-semibold px-4 py-2 rounded-full text-white"
-            style={{ background: "linear-gradient(90deg, #F97316 0%, #E91E8C 100%)" }}
-          >
-            Test de personalidad
-          </QuizCTA>
-        </nav>
+      <header className="w-full max-w-2xl mx-auto px-5 pt-6 pb-3 flex items-center">
+        <Logo height={22} />
       </header>
 
       <main className="w-full max-w-2xl mx-auto flex flex-col pb-20">
