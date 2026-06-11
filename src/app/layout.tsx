@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     template: "%s | ALIZEE",
   },
   description:
-    "Diseña el regalo perfecto para papá: box ritual personalizado según su personalidad, con tótem 3D, piedra natural y vela de copal. Envíos a todo México.",
+    "Diseña el regalo perfecto para papá: un paquete secreto personalizado según su personalidad, con una pieza de arte hecha a su medida y dossier de análisis. Envíos a todo México.",
   openGraph: {
     title: "Regalo de Día del Padre personalizado | ALIZEE México",
-    description: "Box ritual personalizado según su personalidad: tótem 3D, piedra natural y vela de copal. Pide antes del 17 de junio.",
+    description: "Un paquete secreto personalizado según su personalidad: pieza de arte y dossier de análisis. Pide antes del 17 de junio.",
     url: "https://alizee.mx",
     siteName: "ALIZEE",
     locale: "es_MX",
@@ -44,14 +44,14 @@ export const metadata: Metadata = {
         url: "/portada-hero.jpg",
         width: 1200,
         height: 630,
-        alt: "ALIZEE — Box ritual personalizado para Día del Padre",
+        alt: "ALIZEE — Regalo personalizado para Día del Padre",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Regalo de Día del Padre personalizado | ALIZEE",
-    description: "Box ritual según su personalidad: tótem 3D, piedra y vela de copal. Envíos a todo México.",
+    description: "Paquete secreto según su personalidad: pieza de arte y dossier de análisis. Envíos a todo México.",
     images: ["/portada-hero.jpg"],
   },
   alternates: {

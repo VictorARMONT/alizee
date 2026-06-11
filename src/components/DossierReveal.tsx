@@ -63,6 +63,15 @@ const ARCHETYPE_GLYPHS: Record<ArchetypeKey, string> = {
   sabio:      "◎",
 };
 
+/* ── Eneagrama — eneatipo por arquetipo (no cálculo natal; el real sale de test
+   psicológico, no de fecha). Mapeo 1:1 con los 4 arquetipos del funnel. ── */
+const ENEAGRAMA: Record<ArchetypeKey, { num: number; name: string; trait: string }> = {
+  lider:      { num: 8, name: "El Desafiador",    trait: "Protector y decidido. Toma el control y defiende a los suyos." },
+  explorador: { num: 7, name: "El Entusiasta",    trait: "Busca experiencias y variedad. La rutina lo apaga, lo nuevo lo enciende." },
+  creador:    { num: 4, name: "El Individualista", trait: "Sensible y auténtico. Crea desde lo que siente, no desde lo que conviene." },
+  sabio:      { num: 5, name: "El Investigador",  trait: "Observador y profundo. Recarga en silencio, decide con información." },
+};
+
 /* ── Saju (사주) — elemento dominante por año de nacimiento ── */
 const SAJU_ELEMENTS = [
   { glyph: "木", name: "Madera", korean: "목" },
@@ -282,6 +291,26 @@ export function DossierReveal({
               {sajuEl && (
                 <NatalBadge glyph={sajuEl.glyph} label={sajuEl.name} sublabel={`Saju · ${sajuEl.korean}`} />
               )}
+            </div>
+
+            {/* Eneagrama — eneatipo por arquetipo */}
+            <div className="flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--brand-border)] bg-[var(--brand-bg)] px-4 py-3">
+              <span
+                className="shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-[17px] font-bold text-white tabular-nums"
+                style={{ background: "linear-gradient(135deg, #F97316 0%, #E91E8C 100%)" }}
+              >
+                {ENEAGRAMA[archetypeKey].num}
+              </span>
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-baseline gap-2">
+                  <p className="text-[13px] font-semibold text-[var(--brand-fg)]">
+                    Eneatipo {ENEAGRAMA[archetypeKey].num} · {ENEAGRAMA[archetypeKey].name}
+                  </p>
+                </div>
+                <p className="text-[11px] leading-snug text-[var(--brand-fg-muted)]">
+                  {ENEAGRAMA[archetypeKey].trait}
+                </p>
+              </div>
             </div>
 
             {signInfo && (

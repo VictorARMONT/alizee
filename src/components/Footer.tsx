@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,11 +11,7 @@ export function Footer() {
       <div className="mx-auto max-w-md flex flex-col gap-6">
         {/* Info */}
         <div className="flex flex-col gap-3 text-sm text-[var(--brand-fg-muted)]">
-          <p>
-            <strong className="text-[var(--brand-fg)]">ALIZEE</strong>
-            <br />
-            El regalo que se vuelve un momento.
-          </p>
+          <Logo variant="dark" height={48} href={null} />
           <div>
             <p className="text-xs uppercase tracking-[0.12em] text-[var(--brand-primary)] mb-1">
               Contacto

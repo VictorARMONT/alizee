@@ -42,7 +42,7 @@ export default async function HomePage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/portada-hero.jpg"
-            alt="ALIZEE — Box ritual para Día del Padre"
+            alt="ALIZEE — Regalo personalizado para Día del Padre"
             className="absolute inset-0 w-full h-full object-cover"
             style={{ objectPosition: "center 35%" }}
             fetchPriority="high"
@@ -65,7 +65,7 @@ export default async function HomePage() {
               <em className="az-em not-italic" style={{ color: "#F9A8D4" }}>lo va a sorprender.</em>
             </h1>
             <p className="text-[16px] leading-relaxed text-white/80 max-w-md">
-              Responde un test de 2 minutos sobre tu papá y diseñamos un <strong className="text-white font-semibold">box ritual hecho a su medida</strong>: tótem en 3D, piedra natural y vela de copal.
+              Responde un test de 2 minutos sobre tu papá y diseñamos un <strong className="text-white font-semibold">paquete secreto hecho a su medida</strong> — se convierte en un regalo unico e irrepetible y el resultado de estudio revela revela quién es de verdad.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mt-1">
               <QuizCTA
@@ -118,7 +118,7 @@ export default async function HomePage() {
             </div>
             <CountdownServer onDark />
             <p className="text-[14px] text-white/85 leading-relaxed max-w-sm">
-              Box ritual personalizado según su arquetipo. Análisis de patrones numéricos incluido.
+              Paquete secreto personalizado según su arquetipo. Incluye dossier con su análisis.
             </p>
             <QuizCTA
               className="self-start min-h-[48px] px-6 rounded-full flex items-center text-[15px] font-semibold bg-white transition-opacity hover:opacity-90"
@@ -150,8 +150,8 @@ export default async function HomePage() {
             />
             <StepCard
               n="3"
-              title="Recibe su box ritual"
-              detail="Tótem impreso en 3D, piedra natural y vela de copal — empacados y listos para regalar."
+              title="Recibe su paquete secreto"
+              detail="Una pieza de arte hecha a su medida y un dossier con su análisis, listos para regalar."
             />
           </div>
         </section>
@@ -166,7 +166,7 @@ export default async function HomePage() {
               href="/quiz"
               emoji="✦"
               title="Diseño de regalo"
-              detail="Box ritual personalizado según su personalidad y arquetipo."
+              detail="Paquete secreto personalizado según su personalidad y arquetipo."
               tag="Exclusivo"
             />
             <CategoryCard

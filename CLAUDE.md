@@ -6,7 +6,7 @@ Este archivo es el contexto persistente del proyecto. Claude Code lo lee al inic
 
 ## 0\. Qué es esto (en una frase)
 
-ALIZEE es una web que vende **"el regalo perfecto"**: un funnel de conversión mobile-first, tipo revelación guiada, que arma un **box ritual personalizado** para el festejado/a a partir de un análisis previo (personalidad/arquetipo, y opcionalmente astral). Culmina en un objeto impreso en 3D \+ dossier de análisis \+ piedra/mineral \+ vela de copal de protección.
+ALIZEE es una web que vende **"el regalo perfecto"**: un funnel de conversión mobile-first, tipo revelación guiada, que arma un **box personalizado** para el festejado/a a partir de un análisis previo (personalidad/arquetipo, y opcionalmente astral). Culmina en el envío de un paquete secreto \+ dossier de análisis \+ pieza de artea.
 
 ## 1\. Prioridad de lanzamiento (CRÍTICO)
 
