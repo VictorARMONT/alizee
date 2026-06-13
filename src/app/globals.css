@@ -260,3 +260,19 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* ============================================================
+   ACCESIBILIDAD — prefers-reduced-motion (CLAUDE.md §UX)
+   Respeta a quien pidió menos movimiento: anula animaciones y
+   transiciones, conserva opacidad final (contenido visible).
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

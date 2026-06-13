@@ -1,108 +1,115 @@
 # CLAUDE.md — Proyecto ALIZEE (automatiostudio)
 
-Este archivo es el contexto persistente del proyecto. Claude Code lo lee al iniciar sesión. No re-expliques nada que ya esté aquí. Si algo no está definido, pregunta antes de inventar.
+Contexto persistente del proyecto. Claude Code lo lee al iniciar sesión. No re-expliques lo que ya está aquí. Si algo no está definido, **pregunta antes de inventar**.
 
 ---
 
-## 0\. Qué es esto (en una frase)
+## Reglas que no se rompen
+- La **fecha de nacimiento NUNCA es obligatoria** ni bloquea el funnel. Siempre saltable.
+- **NO inventes identidad de marca.** Los design tokens son placeholders hasta que llegue la guía visual (ver §Branding).
+- **NO uses `localStorage`.** El store del funnel usa `sessionStorage` (se borra al cerrar pestaña) y `reset()` limpia la PII. La dirección de entrega NO se persiste. No amplíes el storage a más PII sin avisarme.
+- **PII fuera de la URL en claro.** La ficha (`/ficha`) va CIFRADA (AES-256-GCM, `FICHA_SECRET`) vía `/api/ficha`. Nunca metas datos personales legibles en una URL.
+- Construye por **fases pequeñas y verificables**. Nunca generes todo el proyecto de un golpe.
+- Antes de **instalar una dependencia** no listada o tomar una decisión de arquitectura no escrita aquí, dime **qué y por qué en una línea**.
+- Antes de tocar formularios o el flujo de datos, lee **`/AUDITORIA.md`**. Los P0 legales (aviso de privacidad, datos de terceros) son requisito de lanzamiento, no opcionales.
 
-ALIZEE es una web que vende **"el regalo perfecto"**: un funnel de conversión mobile-first, tipo revelación guiada, que arma un **box personalizado** para el festejado/a a partir de un análisis previo (personalidad/arquetipo, y opcionalmente astral). Culmina en el envío de un paquete secreto \+ dossier de análisis \+ pieza de artea.
+---
 
-## 1\. Prioridad de lanzamiento (CRÍTICO)
+## Qué es esto (una frase)
+ALIZEE vende **"el regalo perfecto"**: un funnel mobile-first tipo revelación guiada que arma un **box personalizado** para el festejado/a a partir de un análisis previo (personalidad/arquetipo, opcionalmente astral). Culmina en un paquete secreto + dossier de análisis + pieza de arte.
 
-- **Tema del mes: Día del Padre (México, domingo 21 de junio).**  
-- **Se construye PRIMERO la sección masculina / "padre".** La femenina queda para fase 2\.  
-- Hay ventana corta hasta el 21\. Optimiza para shippear rápido una sección, no dos a medias.  
-- El funnel femenino (bolso por arquetipo → joya → sorpresa) es el **blueprint maestro**; el del padre es esa misma arquitectura adaptada. Diseña los componentes para ser reutilizables entre ambas secciones (data-driven, no hardcodeado por género).
+## Comandos
+- Dev server: `npm run dev` (déjalo corriendo para que yo revise)
+- Typecheck: `npm run typecheck` — **córrelo antes de dar por terminada cualquier tarea**
+- Lint: `npm run lint`
+- Build: `npm run build`
+- Después de tocar el funnel, **verifica a 375px de ancho con Playwright MCP** (di "usa playwright mcp" la primera vez en la sesión).
 
-## 2\. Arquitectura del funnel (mobile-first, "revelación guiada")
+## Documentos de referencia (léelos cuando apliquen)
+- **`/docs/FUNNEL.md`** — especificación completa del funnel (orden de pantallas, motor de personalización por niveles). **Léelo antes de tocar `/src/funnel` o `/src/components` del quiz.**
+- **`/AUDITORIA.md`** — seguridad, UX/UI, SEO y legal, priorizado en P0/P1/P2. **Léelo antes de tocar datos, formularios o checkout.**
 
-Experiencia secuencial estilo quiz/historia. **Una decisión por pantalla**, baja carga cognitiva, **auto-avance al confirmar**, **barra de progreso** siempre visible. Nada de formularios largos al inicio. El clímax es el regalo sorpresa desbloqueándose tras el análisis.
+---
 
-Flujo del padre (orden de pantallas):
+## Estado actual de campaña (CADUCA — revisar/borrar después del 21 jun)
+- **Tema del mes: Día del Padre (México, domingo 21 de junio).**
+- Se construye **PRIMERO la sección masculina / "padre"**. La femenina es fase 2.
+- Ventana corta hasta el 21: optimiza para shippear **una** sección bien, no dos a medias.
+- Hay un **contador hacia la fecha-tope de pedido** visible en el funnel.
+> Nota: todo lo de esta sección es temporal. Después del 21 de junio, este contexto es obsoleto — no lo trates como regla permanente.
 
-1. **Portada / intro**  
-   - Una sola propuesta de valor \+ un solo CTA primario ("Empezar").  
-   - Mensaje corto y transparente de **cómo se usan los datos** (importante: pedimos fecha de nacimiento; decir para qué, arriba del fold). Protege confianza y conversión.  
-2. **Quiz: mantenlo corto.** Objetivo 6–7 pasos, nunca más de 8. Menos preguntas \= menos abandono (validado por Victor jun 2026 — se descartó subir el tope a 11). Cada pregunta debe **alimentar el output** (arquetipo, dossier o producto); si una no cambia nada, va fuera. Las concretas y de baja fricción van primero; las opcionales (fecha/hora) al final y **siempre saltables**. Auto-avance + barra de progreso.  
-   - Q1 — ¿Para quién es? (papá / abuelo / esposo / suegro / figura paterna) → define relación.  
-   - Profesión — ¿A qué se dedica? → personaliza el dossier (y el producto, fase 2). Concreta, temprana, baja fricción.  
-   - Personalidad/arquetipo con lenguaje **concreto y masculino**: líder, explorador, creador, clásico, etc. (NO lenguaje esotérico aquí todavía.)  
-   - Opcional — Fecha de nacimiento (solo signo solar). Enmarcado como "para desbloquear tu lectura personalizada". **NUNCA obligatorio. Nunca una barrera.**  
-   - UI por pregunta: opción se ilumina/cambia color al seleccionar → activa botón → auto-avanza.  
-3. **Ancla de estilo** — pieza de piel o reloj según arquetipo. Al elegir, auto-avanza.  
-4. **Complemento** — fragancia o destilado curado (este último con asterisco logístico por alcohol).  
-5. **Revelación (clímax)** — el "regalo sorpresa" se desbloquea con animación: objeto personalizado impreso en 3D \+ dossier de análisis (lugares que visitar, qué comer, en qué invertir su tiempo) \+ piedra/mineral \+ **vela de copal para protección** (activo de marca más fuerte, culturalmente universal en México).  
-   - Aquí SÍ entra el lenguaje de intención/ritual/significado. Encuadre: significado, no predicción.  
-6. **Página de resultados (shoppable)**  
-   - Lidera con el resultado. **UN solo CTA primario** ("Armar mi regalo" / "Añadir al carrito").  
-   - Links secundarios degradados a texto (evitar parálisis de decisión).  
-   - 2–3 marcadores de confianza (garantía, envío, reseña/proof).  
-   - **Captura de email AQUÍ** ("Guarda tu resultado"), no al inicio.  
-7. **Urgencia real** — **contador hacia la fecha-tope de pedido** (antes del 21 jun) visible.
+---
 
-## 3\. Motor de personalización (por niveles)
+## Stack técnico
+- **Next.js (App Router) + TypeScript**
+- **Tailwind CSS** (design tokens en `tailwind.config`, nunca colores sueltos)
+- **Framer Motion** (paquete `motion`) para transiciones, swipe y la animación de "desbloqueo" del reveal
+- Estado del quiz: **Zustand** (un solo store del funnel) o `useReducer`
+- Deploy: **Vercel**
+- Sin backend pesado por ahora. Productos/recomendaciones mock en `/src/data`. El motor de recomendación es una **función pura**: respuestas → arquetipo → productos.
 
-- **Nivel B (default):** signo solar \+ quiz de personalidad. Es el camino principal.  
-- **Nivel A (enriquecimiento opcional):** carta completa si el usuario tiene fecha/hora/lugar exactos. Nunca bloquear el funnel por falta de estos datos.  
-- El análisis se presenta como **intención / ritual / significado**, jamás como predicción dura.
-
-## 4\. Stack técnico
-
-- **Next.js (App Router) \+ TypeScript**  
-- **Tailwind CSS** para estilos (define design tokens en `tailwind.config`, no colores sueltos)  
-- **Framer Motion** para transiciones, swipe y la animación de "desbloqueo" del reveal  
-- Estado del quiz: React `useReducer` o **Zustand** (un solo store del funnel)  
-- Deploy objetivo: **Vercel**  
-- Sin backend pesado por ahora; mock de productos/recomendaciones en archivos locales (`/src/data`). El motor de recomendación es una función pura: respuestas → arquetipo → productos.
-
-## 5\. Estructura sugerida del repo
-
+## Estructura del repo
+```
 /src
+  /app          # rutas: /(padre)/..., layout, página de resultados
+  /components   # QuizScreen, ProgressBar, OptionCard, RevealCard, CountdownTimer, ...
+  /funnel       # lógica: máquina de pasos, auto-avance, scoring de arquetipo
+  /data         # preguntas, arquetipos, catálogo de productos (mock), copy
+  /lib          # analytics (eventos), utils
+  /styles       # tokens / globals
+/store          # estado del funnel (zustand)
+```
+Componentes **data-driven y reutilizables** entre la sección padre y la futura femenina. Nada hardcodeado por género.
 
-  /app            \# rutas: /(padre)/... , layout, página de resultados
+## Reglas de diseño / UX
+- **Mobile-first siempre.** Probar a 375px. Cada pantalla cabe sin scroll en móvil.
+- **Velocidad:** carga rápida; 1s de retraso tira conversión móvil.
+- **Una decisión por pantalla**, auto-avance al confirmar, barra de progreso siempre visible. Nada de formularios largos al inicio.
+- Accesibilidad básica: contraste AA, foco visible, touch targets ≥ 44px, respetar `prefers-reduced-motion` en animaciones.
 
-  /components     \# QuizScreen, ProgressBar, OptionCard, RevealCard, CountdownTimer, ...
+## Branding (PENDIENTE — pedir antes de fijar)
+Aún no hay identidad de referencia. Deja los design tokens como **placeholders claros** (`--brand-primary`, `--brand-accent`, tipografías) en un solo archivo, fáciles de reemplazar. No inventes una identidad final.
 
-  /funnel         \# lógica: máquina de pasos, auto-avance, scoring de arquetipo
+## Pagos (CLIP)
+- Pasarela elegida: **CLIP** (`developer.clip.mx`). Stub en `src/lib/payment.ts`.
+- Env requerida (prod): **`CLIP_API_KEY`**. Decisión pendiente: Payment Links (redirección a pago hosted, más simple) vs Checkout SDK.
+- Pago real necesita **webhook** de confirmación → cuando se conecte, probablemente convenga DB (Vercel KV/Supabase) para registrar pedidos y migrar la ficha a `?id=` corto.
+- Hoy el checkout cierra por **WhatsApp** (handoff manual). CLIP entra como camino de pago primario; mantener WhatsApp como fallback hasta validar.
 
-  /data           \# preguntas, arquetipos, catálogo de productos (mock), copy
+## Medición (instrumentar desde el día 1)
+Eventos: `StartQuiz`, `CompleteQuiz`, `ViewRecommendation`, `AddToCart`, `InitiateCheckout`, `Purchase`. Propiedades: paso, arquetipo, presupuesto, relación con festejado.
+Métricas que importan: (1) drop-off por paso; (2) % que completa el paso de análisis; (3) add-to-cart tras la revelación.
+- **Cableado**: GA4 + Meta Pixel en `layout.tsx`, bridge en `__analyticsDispatch` (`src/lib/analytics.ts`). Solo activan con env: **`NEXT_PUBLIC_GA_ID`** (G-…) y **`NEXT_PUBLIC_META_PIXEL_ID`**. Mapeo a eventos estándar de Meta: `CompleteQuiz`→`Lead`, `ViewRecommendation`→`ViewContent`, `AddToCart`/`InitiateCheckout`/`Purchase` directos.
 
-  /lib            \# analytics (eventos), utils
+## Variables de entorno
+```
+NEXT_PUBLIC_GA_ID=G-XXXXXXX            # GA4 (opcional, sin valor no carga)
+NEXT_PUBLIC_META_PIXEL_ID=XXXXXXXXXX   # Meta Pixel (opcional)
+FICHA_SECRET=<cadena larga aleatoria>  # cifra la ficha (PII) — OBLIGATORIA en prod
+BREVO_API_KEY=...                      # captura de email
+BREVO_LIST_ID=0
+NEXT_PUBLIC_GOOGLE_MAPS_KEY=...        # autocompletado dirección (restringir por dominio en GCP)
+NEXT_PUBLIC_WHATSAPP_NUMBER=52...      # destino del pedido
+NEXT_PUBLIC_BASE_URL=https://alizee.mx
+CLIP_API_KEY=...                       # pagos (pendiente)
+# Rate limiting (Upstash/Vercel KV). Sin esto cae a memoria (no fiable en serverless)
+KV_REST_API_URL=...                    # o UPSTASH_REDIS_REST_URL
+KV_REST_API_TOKEN=...                  # o UPSTASH_REDIS_REST_TOKEN
+```
+> **Provisionar KV**: Vercel dashboard → Storage → Create (Upstash Redis/KV) → conectar al proyecto. Inyecta las envs solo. `src/lib/rate-limit.ts` las detecta solo.
 
-  /styles         \# tokens / globals
+## Cómo trabajar conmigo (Victor)
+- Fases pequeñas y verificables. **Fase 1:** scaffold + portada + 1 pantalla de quiz funcional con auto-avance y barra de progreso. Reviso y seguimos.
+- Estrategia, copy y validación se trabajan en paralelo en otra ventana. Si falta copy, usa placeholders `// TODO COPY`.
 
-/store            \# estado del funnel (zustand)
-
-## 6\. Reglas de diseño / UX
-
-- Mobile-first SIEMPRE. Probar a 375px de ancho. Cada pantalla cabe sin scroll en móvil.  
-- Velocidad: la página debe cargar rápido (un retraso de 1s puede tirar conversión móvil).  
-- Accesibilidad básica: contraste, foco visible, botones grandes (touch targets ≥ 44px).  
-- Componentes reutilizables entre sección padre y futura sección femenina (data-driven).  
-- **No** uses `localStorage`/`sessionStorage` para estado crítico del checkout sin avisarme.
-
-## 7\. Branding (PENDIENTE — pedir antes de fijar)
-
-- Aún no se ha entregado la imagen/identidad de referencia. **Deja los design tokens como placeholders claros** (`--brand-primary`, `--brand-accent`, tipografías) en un solo archivo, fáciles de reemplazar cuando llegue la guía visual. No inventes una identidad final.
-
-## 8\. Medición (instrumentar desde el día 1\)
-
-Eventos: `StartQuiz`, `CompleteQuiz`, `ViewRecommendation`, `AddToCart`, `Purchase`. Propiedades: paso, arquetipo, presupuesto, relación con festejado. Métricas que importan:
-
-1. **Drop-off por paso** (dónde se cae la gente).  
-2. **% que completa el paso de análisis** (aquí mueren los funnels esotéricos / de captura).  
-3. **Add-to-cart tras la revelación.**
-
-## 9\. Cómo trabajar conmigo (Victor)
-
-- Construye por **fases pequeñas y verificables**. No generes todo el proyecto de un golpe.  
-- Fase 1 sugerida: scaffold del proyecto \+ portada \+ 1 pantalla de quiz funcional con auto-avance y barra de progreso. Lo reviso y seguimos.  
-- Antes de instalar dependencias nuevas o tomar una decisión de arquitectura no listada aquí, dime qué vas a hacer y por qué, en una línea.  
-- La estrategia, el copy y la validación de ideas se trabajan en paralelo en otra ventana; si algo de copy no está definido, usa placeholders marcados con `// TODO COPY`.
+## Navegación del repo (graphify)
+Hay un knowledge graph en `graphify-out/`.
+- Para preguntas sobre el código, corre primero `graphify query "<pregunta>"` si existe `graphify-out/graph.json`. Usa `graphify path "<A>" "<B>"` para relaciones y `graphify explain "<concepto>"` para conceptos puntuales (devuelven un subgrafo acotado, más chico que el reporte completo).
+- Si existe `graphify-out/wiki/index.md`, úsalo para navegación amplia en vez de explorar el código crudo.
+- Lee `graphify-out/GRAPH_REPORT.md` solo para revisión de arquitectura amplia.
+- Después de modificar código, corre `graphify update .` para mantener el grafo al día (solo AST, sin costo de API).
 
 ---
 
-### Primer mensaje sugerido para arrancar en la terminal
-
-Lee CLAUDE.md. Inicializa el proyecto Next.js \+ TS \+ Tailwind \+ Framer Motion en esta carpeta, y construye SOLO la Fase 1: scaffold, portada (intro con CTA y nota de uso de datos) y una primera pantalla de quiz funcional con barra de progreso, selección que cambia color y auto-avance. Déjame un `npm run dev` corriendo para revisar. No avances a más pantallas todavía.  
+### Primer mensaje para arrancar en la terminal
+> Lee CLAUDE.md y /docs/FUNNEL.md. Inicializa Next.js + TS + Tailwind + Framer Motion en esta carpeta y construye SOLO la Fase 1: scaffold, portada (intro con CTA y nota de uso de datos) y una primera pantalla de quiz funcional con barra de progreso, selección que cambia color y auto-avance. Deja `npm run dev` corriendo. No avances a más pantallas todavía.

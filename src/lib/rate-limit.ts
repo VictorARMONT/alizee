@@ -1,52 +1,93 @@
 /**
- * Rate limiting simple en memoria.
- * Para MVP. En producción: usar Redis o similar.
+ * Rate limiting con Upstash Redis (durable, sirve en serverless).
+ *
+ * Producción: provisiona un KV/Upstash Redis en Vercel → inyecta las envs.
+ * Soporta los dos juegos de nombres comunes:
+ *   - KV_REST_API_URL / KV_REST_API_TOKEN        (integración Vercel KV)
+ *   - UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN (Upstash directo)
+ *
+ * Sin esas envs (dev/local), cae a un limitador en memoria. OJO: el de memoria
+ * NO es fiable en serverless (se reinicia por instancia) — es solo fallback.
  */
 
-type RateLimitKey = string;
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-interface RateLimitEntry {
+/* ── Conexión Redis (singleton) ─────────────────────────────────────── */
+const REDIS_URL =
+  process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL ?? "";
+const REDIS_TOKEN =
+  process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN ?? "";
+
+const redis =
+  REDIS_URL && REDIS_TOKEN
+    ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+    : null;
+
+/* Cache de instancias Ratelimit por (limit|windowMs) — crear una vez. */
+const limiters = new Map<string, Ratelimit>();
+
+function getLimiter(limit: number, windowMs: number): Ratelimit | null {
+  if (!redis) return null;
+  const cacheKey = `${limit}|${windowMs}`;
+  let rl = limiters.get(cacheKey);
+  if (!rl) {
+    rl = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(limit, `${windowMs} ms`),
+      prefix: "alizee/rl",
+      analytics: false,
+    });
+    limiters.set(cacheKey, rl);
+  }
+  return rl;
+}
+
+/* ── Fallback en memoria (solo dev) ─────────────────────────────────── */
+interface MemEntry {
   count: number;
   resetAt: number;
 }
+const memStore = new Map<string, MemEntry>();
 
-const store = new Map<RateLimitKey, RateLimitEntry>();
-
-// Limpiar cada 5 minutos
-setInterval(() => {
+function checkMemory(
+  identifier: string,
+  limit: number,
+  windowMs: number,
+): { allowed: boolean; remaining: number } {
   const now = Date.now();
-  for (const [key, entry] of store.entries()) {
-    if (entry.resetAt < now) {
-      store.delete(key);
-    }
+  let entry = memStore.get(identifier);
+  if (!entry || entry.resetAt < now) {
+    entry = { count: 0, resetAt: now + windowMs };
+    memStore.set(identifier, entry);
   }
-}, 5 * 60 * 1000);
+  entry.count += 1;
+  return {
+    allowed: entry.count <= limit,
+    remaining: Math.max(0, limit - entry.count),
+  };
+}
 
 /**
- * Verifica si se ha excedido el límite de rate limit.
+ * Verifica el rate limit. Usa Redis si está configurado; si no, memoria (dev).
  * @param identifier IP, email, session, etc.
  * @param limit máximo de requests
  * @param windowMs ventana de tiempo en ms
- * @returns { allowed: boolean, remaining: number }
  */
-export function checkRateLimit(
+export async function checkRateLimit(
   identifier: string,
   limit: number = 10,
-  windowMs: number = 60 * 1000, // 1 minuto por defecto
-): { allowed: boolean; remaining: number } {
-  const now = Date.now();
-  const key = identifier;
-
-  let entry = store.get(key);
-
-  if (!entry || entry.resetAt < now) {
-    entry = { count: 0, resetAt: now + windowMs };
-    store.set(key, entry);
+  windowMs: number = 60 * 1000,
+): Promise<{ allowed: boolean; remaining: number }> {
+  const limiter = getLimiter(limit, windowMs);
+  if (limiter) {
+    try {
+      const { success, remaining } = await limiter.limit(identifier);
+      return { allowed: success, remaining };
+    } catch {
+      // Redis caído → no bloquear al usuario, degradar a memoria.
+      return checkMemory(identifier, limit, windowMs);
+    }
   }
-
-  entry.count += 1;
-  const remaining = Math.max(0, limit - entry.count);
-  const allowed = entry.count <= limit;
-
-  return { allowed, remaining };
+  return checkMemory(identifier, limit, windowMs);
 }

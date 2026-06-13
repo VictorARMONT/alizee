@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
   // Rate limit: 10 intentos por IP cada 1 minuto
   const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
-  const { allowed, remaining } = checkRateLimit(ip, 10, 60 * 1000);
+  const { allowed } = await checkRateLimit(ip, 10, 60 * 1000);
   if (!allowed) {
     return NextResponse.json(
       { error: "rate_limit_exceeded" },

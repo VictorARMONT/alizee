@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import Script from "next/script";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
+import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { ProductSchemaScript } from "@/components/ProductSchema";
 import { BackgroundLayers } from "@/components/BackgroundLayers";
 import "./globals.css";
@@ -77,6 +78,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID; // GA4 Measurement ID (G-…) — sin valor, no carga gtag
+  const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID; // Meta Pixel ID — sin valor, no carga fbq
   return (
     <html
       lang="es-MX"
@@ -90,6 +92,7 @@ export default function RootLayout({
         <BackgroundLayers />
         <div className="flex-1 relative z-10">{children}</div>
         <ConditionalFooter />
+        <WhatsAppFab />
         {GA_ID && (
           <>
             <Script
@@ -101,9 +104,42 @@ export default function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', '${GA_ID}', { page_path: window.location.pathname, anonymize_ip: true });
-              window.__analyticsDispatch = (event) => { var n=event.name,p=Object.assign({},event); delete p.name; gtag('event',n,p); };
             `}</Script>
           </>
+        )}
+
+        {FB_PIXEL_ID && (
+          <Script id="meta-pixel" strategy="afterInteractive">{`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window,document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${FB_PIXEL_ID}');
+            fbq('track', 'PageView');
+          `}</Script>
+        )}
+
+        {(GA_ID || FB_PIXEL_ID) && (
+          <Script id="analytics-bridge" strategy="afterInteractive">{`
+            (function(){
+              // Mapa de eventos ALIZEE → eventos estándar de Meta Pixel.
+              var FB_STD = { AddToCart:'AddToCart', InitiateCheckout:'InitiateCheckout',
+                CompleteQuiz:'Lead', ViewRecommendation:'ViewContent', Purchase:'Purchase' };
+              window.__analyticsDispatch = function(event){
+                var name = event.name;
+                var params = Object.assign({}, event); delete params.name;
+                if (typeof window.gtag === 'function') { window.gtag('event', name, params); }
+                if (typeof window.fbq === 'function') {
+                  if (FB_STD[name]) { window.fbq('track', FB_STD[name], params); }
+                  else { window.fbq('trackCustom', name, params); }
+                }
+              };
+            })();
+          `}</Script>
         )}
       </body>
     </html>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { fetchShopifyCollection } from "@/lib/shopify";
 import { ProductCard } from "@/components/ProductCard";
 import { CountdownServer } from "@/components/CountdownServer";
@@ -6,6 +7,10 @@ import { Logo } from "@/components/Logo";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { PrivacyBanner } from "@/components/PrivacyBanner";
 import { QuizCTA } from "@/components/QuizCTA";
+import { BoxMethodologySection } from "@/components/BoxMethodologySection";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
+import { GuaranteeFaqSection } from "@/components/GuaranteeFaqSection";
+import { PaymentMethodsBand } from "@/components/PaymentMethodsBand";
 
 export const revalidate = 300; // revalida cada 5 min
 
@@ -28,13 +33,14 @@ export default async function HomePage() {
 
         {/* ── HERO ── */}
         <section className="mx-5 mt-4 rounded-[var(--radius-lg)] overflow-hidden relative min-h-[480px] flex flex-col justify-end">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/portada-hero.jpg"
             alt="ALIZEE — Regalo personalizado para Día del Padre"
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            priority
+            sizes="(max-width: 672px) 100vw, 672px"
+            className="object-cover"
             style={{ objectPosition: "center 35%" }}
-            fetchPriority="high"
           />
           <div
             className="absolute inset-0"
@@ -119,6 +125,13 @@ export default async function HomePage() {
         </section>
         </ScrollReveal>
 
+        {/* ── MÉTODOS DE PAGO (señal MX: factor decisivo AMVO) ── */}
+        <ScrollReveal delay={60}>
+          <div className="mx-5 mt-4">
+            <PaymentMethodsBand />
+          </div>
+        </ScrollReveal>
+
         {/* ── CÓMO FUNCIONA ── */}
         <ScrollReveal delay={80}>
         <section className="px-5 mt-10 flex flex-col gap-5">
@@ -145,6 +158,12 @@ export default async function HomePage() {
           </div>
         </section>
         </ScrollReveal>
+
+        {/* ── QUÉ TRAE EL BOX + CÓMO LO ANALIZAMOS ── */}
+        <BoxMethodologySection />
+
+        {/* ── PRUEBA SOCIAL (Spiegel 2017: 0→5 reseñas ≈ +270% conversión) ── */}
+        <TestimonialsSection />
 
         {/* ── CATEGORÍAS ── */}
         <ScrollReveal delay={80}>
@@ -214,6 +233,29 @@ export default async function HomePage() {
               <TrustCard icon="◉" title="Envío a todo México" detail="Empaque cuidado y entrega puntual antes del Día del Padre." />
               <TrustCard icon="◊" title="Atención por WhatsApp" detail="Sin formularios largos. Compra y resuelve dudas en un solo mensaje." />
             </div>
+          </section>
+        </ScrollReveal>
+
+        {/* ── GARANTÍA + FAQ (reversión de riesgo + manejo de objeciones) ── */}
+        <GuaranteeFaqSection />
+
+        {/* ── CTA FINAL (cierre tras resolver objeciones) ── */}
+        <ScrollReveal delay={80}>
+          <section className="px-5 mt-12 flex flex-col items-center gap-4 text-center">
+            <h2 className="text-[24px] font-bold tracking-tight leading-tight text-[var(--brand-fg)]">
+              Quedan pocos días.
+              <br />
+              Su regalo toma 3 minutos.
+            </h2>
+            <QuizCTA
+              className="inline-flex items-center justify-center min-h-[52px] px-8 rounded-full text-[16px] font-semibold text-white transition-opacity hover:opacity-90"
+              style={{ background: "linear-gradient(90deg, #F97316 0%, #E91E8C 100%)" }}
+            >
+              Crear su regalo →
+            </QuizCTA>
+            <p className="text-[12px] text-[var(--brand-fg-muted)]">
+              Pide antes del 17 de junio · Garantía de satisfacción
+            </p>
           </section>
         </ScrollReveal>
 

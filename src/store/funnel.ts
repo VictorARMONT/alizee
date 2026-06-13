@@ -1,6 +1,11 @@
 /**
  * ALIZEE — Store del funnel (zustand)
- * Memoria session-only. Sin localStorage (CLAUDE.md sección 6).
+ *
+ * Persistencia: sessionStorage (NO localStorage). Se borra al cerrar la pestaña.
+ * Contiene PII (email, respuestas, fecha de nacimiento) → reset() limpia el
+ * storage explícitamente para no dejar datos personales tras completar/abandonar.
+ * CLAUDE.md §6: no usar storage para estado crítico de checkout sin avisar — la
+ * dirección de entrega NO se persiste (vive en estado local del checkout).
  */
 
 import { create } from "zustand";
@@ -120,7 +125,13 @@ export const useFunnel = create<FunnelState>()(
 
   setTierIdx: (i) => set({ selectedTierIdx: Math.max(0, Math.min(i, BOX_TIERS.length - 1)) }),
 
-  reset: () => set({ ...initial }),
+  reset: () => {
+    set({ ...initial });
+    // Borra la PII persistida (email/respuestas/fecha) del sessionStorage.
+    if (typeof window !== "undefined") {
+      try { window.sessionStorage.removeItem("alizee-funnel"); } catch { /* noop */ }
+    }
+  },
 
   getArchetype: () => scoreArchetype(get().answers)?.winner ?? null,
 

@@ -9,6 +9,7 @@ import { DossierReveal } from "@/components/DossierReveal";
 import { BoxTierSelector } from "@/components/BoxTierSelector";
 import { CheckoutSummary, type DeliveryAddress } from "@/components/CheckoutSummary";
 import { StickyFooterSummary } from "@/components/StickyFooterSummary";
+import { PaymentMethodsBand } from "@/components/PaymentMethodsBand";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Logo } from "@/components/Logo";
 import { analytics } from "@/lib/analytics";
@@ -18,6 +19,8 @@ import { getChineseZodiac, getKinMaya } from "@/data/birthProfile";
 import { SIGN_INFO } from "@/data/zodiac";
 import { QUESTIONS } from "@/data/questions";
 import { SLOT_LABELS } from "@/components/CheckoutSummary";
+import { encodeFicha } from "@/lib/ficha";
+import type { FichaPayload } from "@/lib/ficha";
 
 export default function ArmarPage() {
   const router = useRouter();
@@ -73,7 +76,7 @@ export default function ArmarPage() {
     nextFlowStep();
   }
 
-  function handleCheckout(address: DeliveryAddress) {
+  async function handleCheckout(address: DeliveryAddress) {
     const tier = BOX_TIERS[selectedTierIdx];
 
     const RELATIONSHIP_COPY: Record<string, string> = {
@@ -122,7 +125,7 @@ export default function ArmarPage() {
       `• Arquetipo: ${arch.name}`,
       signInfo  && `• Signo solar: ${signInfo.name} ${signInfo.glyph}`,
       chinese   && `• Animal chino: ${chinese.name} ${chinese.glyph}`,
-      kinMaya   && `• Nahual Maya: ${kinMaya.sealName} (Kin ${kinMaya.kin}) · Tono ${kinMaya.tone} ${kinMaya.toneName}`,
+      kinMaya   && `• Nahual (Cholq'ij): ${kinMaya.sealName} · tono ${kinMaya.tone} ${kinMaya.toneName} · día ${kinMaya.kin}/260`,
       birthDate && `• Fecha: ${new Date(birthDate + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}`,
       birthTime && `• Hora: ${birthTime}`,
     ].filter(Boolean).join("\n");
@@ -161,7 +164,7 @@ export default function ArmarPage() {
         : []),
       `────────────────────`,
       `🔧 *FICHA DE CREACIÓN*`,
-      `Pieza 3D: ${piezaNote}`,
+      `Pieza personalizada (diseño): ${piezaNote}`,
       ``,
       `Sistema de identidad:`,
       sistemaLines,
@@ -177,8 +180,49 @@ export default function ArmarPage() {
       `📅 Entregar antes del 21 jun.`,
     ].join("\n");
 
+    // Ficha de diseño — link autocontenido para producción
+    const fichaPayload: FichaPayload = {
+      archetypeKey: archetypeKey!,
+      tierIdx: selectedTierIdx,
+      total,
+      relationship: relationship ?? null,
+      answers,
+      birthDate: birthDate ?? null,
+      birthTime: birthTime ?? null,
+      sign: sign ?? null,
+      address: {
+        street: address.street,
+        colonia: address.colonia,
+        cityState: address.cityState,
+        zip: address.zip,
+        references: address.references,
+        formattedAddress: address.formattedAddress,
+        lat: address.lat,
+        lng: address.lng,
+        deliveryTime: address.deliveryTime,
+      },
+      createdAt: new Date().toISOString(),
+    };
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://alizee.mx";
+
+    /* Cifra la ficha server-side (PII). Fallback a base64 si la API falla. */
+    let fichaToken: string;
+    try {
+      const res = await fetch("/api/ficha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fichaPayload),
+      });
+      const data = (await res.json()) as { token?: string };
+      fichaToken = data.token ?? encodeFicha(fichaPayload);
+    } catch {
+      fichaToken = encodeFicha(fichaPayload);
+    }
+    const fichaLink = `${BASE_URL}/ficha?d=${fichaToken}`;
+
     const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "523349571689";
-    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    const msgConFicha = msg + `\n────────────────────\n🎨 *Ficha de diseño:*\n${fichaLink}`;
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msgConFicha)}`;
 
     analytics.initiateCheckout(archetypeKey!, total, []);
     window.location.href = waUrl;
@@ -208,7 +252,7 @@ export default function ArmarPage() {
               ← Atrás
             </button>
           )}
-          <Logo height={18} href={null} />
+          <Logo height={18} href="/" />
         </div>
         <ProgressBar current={subStep} total={subTotal} label="Su regalo" />
       </header>
@@ -236,7 +280,8 @@ export default function ArmarPage() {
             )}
 
             {flowStep === "configurator" && (
-              <div className="flex flex-col gap-6">
+              /* pb-28: el StickyFooterSummary (fixed, ~100px) tapa el último elemento sin este colchón */
+              <div className="flex flex-col gap-6 pb-28">
                 <div
                   className="relative w-full aspect-[16/7] rounded-[var(--radius-md)] overflow-hidden border"
                   style={{ borderColor: "var(--brand-border)" }}
@@ -263,6 +308,11 @@ export default function ArmarPage() {
                   selectedIdx={selectedTierIdx}
                   onSelect={setTierIdx}
                 />
+                {/* Señales de pago + garantía en el punto de fricción de precio */}
+                <PaymentMethodsBand compact />
+                <p className="text-[12px] text-center text-[var(--brand-fg-muted)] -mt-2">
+                  Garantía de satisfacción · Llega antes del 21 de junio
+                </p>
               </div>
             )}
 
