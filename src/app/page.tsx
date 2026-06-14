@@ -26,7 +26,7 @@ export default async function HomePage() {
 
       {/* ── HEADER ── */}
       <header className="w-full max-w-2xl mx-auto px-5 pt-6 pb-3 flex items-center">
-        <Logo height={22} />
+        <Logo height={22} variant="dark" />
       </header>
 
       <main className="w-full max-w-2xl mx-auto flex flex-col pb-20">
