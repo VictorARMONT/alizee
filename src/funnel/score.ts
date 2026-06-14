@@ -1,8 +1,9 @@
 /**
  * Scoring de arquetipo.
  *
- * - 1 punto por opción de Q2-Q5 cuyo `archetype` coincide.
- * - Desempate: gana la respuesta de Q5/valores (TIEBREAKER_QUESTION_ID).
+ * - 1 punto por cada opción con `archetype` (Q3 proyección, Q4 lugar, Q5
+ *   presión, Q6 energía, Q7 apertura, Q8 valores). Q1/Q2/Q9-Q11 no puntúan.
+ * - Desempate: gana la respuesta de Q8/valores (TIEBREAKER_QUESTION_ID).
  * - Si no hay ninguna respuesta válida, devolvemos null.
  *
  * Pura, sin side-effects → fácil de testear y de mover si llega backend.

@@ -144,17 +144,18 @@ export default async function FichaPage({
     ? new Date(p.birthDate + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })
     : null;
 
-  // Quiz answers a mostrar
+  // Quiz answers a mostrar (orden del quiz Q1-Q11)
   const quizRows = [
     p.answers.relationship && { label: "¿Para quién?",    value: getLabel("relationship", p.answers.relationship) },
     p.answers.profesion    && { label: "Profesión",        value: profesion?.label ?? p.answers.profesion },
     p.answers.proyeccion   && { label: "Proyección",       value: getLabel("proyeccion",   p.answers.proyeccion)   },
-    p.answers.decision     && { label: "Decisiones",       value: getLabel("decision",     p.answers.decision)     },
+    p.answers.decision     && { label: "Lugar ideal",      value: getLabel("decision",     p.answers.decision)     },
     p.answers.presion      && { label: "Bajo presión",     value: getLabel("presion",      p.answers.presion)      },
+    p.answers.energia      && { label: "Energía social",   value: getLabel("energia",      p.answers.energia)      },
+    p.answers.apertura     && { label: "Ante lo nuevo",    value: getLabel("apertura",     p.answers.apertura)     },
     p.answers.valores      && { label: "Valora en otros",  value: getLabel("valores",      p.answers.valores)      },
     p.answers.mascotas     && { label: "Animales",         value: getLabel("mascotas",     p.answers.mascotas)     },
-    p.answers.decision     && { label: "Ambiente ideal",   value: getLabel("decision",     p.answers.decision)     },
-    (p.answers as Record<string, string | undefined>).sobreEl && { label: "En sus palabras", value: (p.answers as Record<string, string>).sobreEl },
+    p.answers.sobreEl      && { label: "En sus palabras",  value: p.answers.sobreEl },
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (

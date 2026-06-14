@@ -27,7 +27,9 @@ export interface Testimonial {
 // TODO COPY: reemplazar con reseñas REALES en cuanto existan las primeras ventas.
 // Publicar testimonios inventados es riesgo legal (PROFECO / NOM-247) y de marca.
 // Mientras no haya reales, la sección puede ocultarse con SHOW_TESTIMONIALS=false.
-export const SHOW_TESTIMONIALS = true;
+// OFF (Victor, 13 jun): testimonios y "+200 papás" inventados → riesgo PROFECO.
+// Reactivar SOLO con reseñas reales (capturar tras primeras ventas).
+export const SHOW_TESTIMONIALS = false;
 
 export const TESTIMONIALS: Testimonial[] = [
   {

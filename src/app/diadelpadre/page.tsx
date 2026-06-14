@@ -114,11 +114,15 @@ export default function ArmarPage() {
 
     const quizLines = [
       answers.relationship && `• ¿Para quién?    → ${getLabel("relationship", answers.relationship)}`,
+      answers.profesion    && `• Profesión       → ${getLabel("profesion",    answers.profesion)}`,
       answers.proyeccion   && `• Proyección      → ${getLabel("proyeccion",   answers.proyeccion)}`,
-      answers.decision     && `• Decisiones      → ${getLabel("decision",     answers.decision)}`,
+      answers.decision     && `• Lugar ideal     → ${getLabel("decision",     answers.decision)}`,
       answers.presion      && `• Bajo presión    → ${getLabel("presion",      answers.presion)}`,
+      answers.energia      && `• Energía social  → ${getLabel("energia",      answers.energia)}`,
+      answers.apertura     && `• Ante lo nuevo   → ${getLabel("apertura",     answers.apertura)}`,
       answers.valores      && `• Valora en otros → ${getLabel("valores",      answers.valores)}`,
       answers.mascotas     && `• Animales        → ${getLabel("mascotas",     answers.mascotas)}`,
+      answers.sobreEl      && `• En sus palabras → ${answers.sobreEl}`,
     ].filter(Boolean).join("\n");
 
     const sistemaLines = [
