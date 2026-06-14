@@ -23,6 +23,7 @@ ALIZEE vende **"el regalo perfecto"**: un funnel mobile-first tipo revelación g
 - Typecheck: `npm run typecheck` — **córrelo antes de dar por terminada cualquier tarea**
 - Lint: `npm run lint`
 - Build: `npm run build`
+- Test: `npm test` (vitest) — funciones puras: scoring, zodiac, maya/chino. Correr tras tocar `/src/funnel` o `/src/data`.
 - Después de tocar el funnel, **verifica a 375px de ancho con Playwright MCP** (di "usa playwright mcp" la primera vez en la sesión).
 
 ## Documentos de referencia (léelos cuando apliquen)
