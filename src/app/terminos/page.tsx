@@ -24,7 +24,7 @@ export default function TermsPage() {
           <h2 className="text-xl font-semibold mb-3">1. El producto</h2>
           <p className="text-gray-700">
             Vendemos un box de regalo personalizado que incluye piezas físicas
-            curadas (objeto impreso en 3D, piedra o mineral, vela ritual) y un
+            curadas (pieza personalizada según arquetipo, piedra o mineral, vela ritual) y un
             dossier de análisis impreso, elaborado a partir de las respuestas del
             cuestionario y, opcionalmente, la fecha de nacimiento del festejado.
           </p>

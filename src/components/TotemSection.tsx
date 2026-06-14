@@ -36,20 +36,20 @@ export function TotemSection({ birthDate, answers, dominantPlanet = "sol" }: Tot
           className="text-[11px] uppercase tracking-[0.24em] font-semibold"
           style={{ color: "var(--brand-primary)" }}
         >
-          Tótem de identidad
+          Pieza personalizada
         </p>
         <span
           className="text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 rounded-full"
           style={{ background: "rgba(249,115,22,0.1)", color: "#F97316" }}
         >
-          Objeto 3D
+          Diseño único
         </span>
       </div>
 
       {/* Intro */}
       <p className="text-[13px] leading-relaxed text-[var(--brand-fg-muted)]">
-        Tu tótem es único — construido en 5 capas que reflejan quién eres en distintos sistemas de
-        conocimiento. Se imprime en 3D y llega dentro de tu box.
+        Una pieza diseñada a partir de su lectura: arquetipo, signo solar, animal y sistemas de identidad.
+        El formato exacto se decide según quién es él — escultura, funda u objeto en resina. Llega dentro del box.
       </p>
 
       {/* Capas — lista de arriba abajo (corona → pedestal) para lectura visual */}

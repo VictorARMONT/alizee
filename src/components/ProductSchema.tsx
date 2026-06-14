@@ -10,7 +10,7 @@ export function ProductSchemaScript() {
     "@context": "https://schema.org",
     "@type": "Product",
     name: `${tier.name} — El Regalo Perfecto`,
-    description: tier.tagline || `Paquete ${tier.name} con análisis personalizado y tótem en 3D.`,
+    description: tier.tagline || `Paquete ${tier.name} con análisis personalizado y pieza diseñada a su medida.`,
     image: "https://alizee.mx/misterybox.png",
     brand: {
       "@type": "Brand",
@@ -36,7 +36,7 @@ export function ProductSchemaScript() {
         name: "¿Qué incluye cada paquete?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Cada paquete incluye: análisis personalizado, tótem en 3D, dossier con recomendaciones, piedra mineral y vela de copal.",
+          text: "Cada paquete incluye: análisis personalizado, pieza diseñada según su arquetipo, dossier con recomendaciones, piedra mineral y vela de copal.",
         },
       },
       {

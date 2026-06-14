@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
           </p>
           <ul className="list-disc pl-5 mb-4 text-gray-700">
             <li>Elaborar el análisis que personaliza el regalo</li>
-            <li>Producir las piezas personalizadas (tótem 3D, dossier)</li>
+            <li>Producir las piezas personalizadas (pieza de diseño, dossier)</li>
             <li>Procesar pago, envío y comunicación del pedido</li>
           </ul>
           <p className="mb-3">
