@@ -22,12 +22,12 @@ export default function ShippingReturnsPage() {
         </section>
 
         <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">1. Tiempos de producción</h2>
+          <h2 className="text-xl font-semibold mb-3">1. Tiempos de producción y entrega</h2>
           <p className="text-gray-700">
-            Cada box se produce a la medida (análisis, dossier impreso y pieza
-            impresa en 3D). El tiempo de producción es de{" "}
-            <strong>2 a 4 días hábiles</strong> a partir de la confirmación del
-            pago. {/* [CONFIRMAR plazo real de producción] */}
+            Cada box se produce a la medida (análisis, dossier impreso y pieza personalizada).
+            El tiempo total desde la confirmación del pago hasta la entrega es de{" "}
+            <strong>3 a 5 días hábiles</strong> (producción más envío nacional),
+            según la zona de destino.
           </p>
         </section>
 
@@ -35,16 +35,17 @@ export default function ShippingReturnsPage() {
           <h2 className="text-xl font-semibold mb-3">2. Envíos</h2>
           <ul className="list-disc pl-5 mb-4 text-gray-700">
             <li>
-              Realizamos envíos a toda la República Mexicana mediante paquetería
-              con número de rastreo. {/* [CONFIRMAR paquetería] */}
+              Realizamos envíos a toda la República Mexicana mediante{" "}
+              <strong>Estafeta</strong>, con número de rastreo.
             </li>
             <li>
-              El tiempo de entrega estimado es de <strong>2 a 5 días hábiles</strong>{" "}
-              tras la producción, según la zona. {/* [CONFIRMAR] */}
+              El tiempo de entrega total estimado es de{" "}
+              <strong>3 a 5 días hábiles</strong> desde la confirmación del pago
+              (incluye producción), según la zona.
             </li>
             <li>
-              El costo de envío se muestra antes de confirmar el pedido.{" "}
-              {/* [CONFIRMAR costo / envío gratis] */}
+              El <strong>costo de envío varía según el código postal de destino</strong>.
+              Te lo confirmamos por WhatsApp antes de cobrar, junto con el total final.
             </li>
             <li>
               Para entregas antes del Día del Padre, el pedido debe realizarse
@@ -52,7 +53,7 @@ export default function ShippingReturnsPage() {
             </li>
           </ul>
           <p className="text-gray-700">
-            Una vez entregado el paquete a la paquetería, te compartimos la guía
+            Una vez entregado el paquete a Estafeta, te compartimos la guía
             de rastreo por correo o WhatsApp.
           </p>
         </section>
@@ -106,7 +107,7 @@ export default function ShippingReturnsPage() {
             Dudas sobre tu envío: <strong>hola@alizee.mx</strong> o WhatsApp.
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            <strong>Última actualización:</strong> 10 de junio de 2026
+            <strong>Última actualización:</strong> 13 de junio de 2026
           </p>
         </section>
 

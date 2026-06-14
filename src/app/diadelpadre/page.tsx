@@ -19,7 +19,6 @@ import { getChineseZodiac, getKinMaya } from "@/data/birthProfile";
 import { SIGN_INFO } from "@/data/zodiac";
 import { QUESTIONS } from "@/data/questions";
 import { SLOT_LABELS } from "@/components/CheckoutSummary";
-import { encodeFicha } from "@/lib/ficha";
 import type { FichaPayload } from "@/lib/ficha";
 
 export default function ArmarPage() {
@@ -209,23 +208,28 @@ export default function ArmarPage() {
     };
     const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://alizee.mx";
 
-    /* Cifra la ficha server-side (PII). Fallback a base64 si la API falla. */
-    let fichaToken: string;
+    /* Cifra la ficha server-side (PII). Fail-closed: si la API no devuelve token
+       (sin FICHA_SECRET o error), se OMITE el link — nunca se emite PII sin cifrar.
+       El mensaje de WhatsApp ya lleva todos los datos del pedido para producción. */
+    let fichaToken: string | null = null;
     try {
       const res = await fetch("/api/ficha", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(fichaPayload),
       });
-      const data = (await res.json()) as { token?: string };
-      fichaToken = data.token ?? encodeFicha(fichaPayload);
+      if (res.ok) {
+        const data = (await res.json()) as { token?: string };
+        fichaToken = data.token ?? null;
+      }
     } catch {
-      fichaToken = encodeFicha(fichaPayload);
+      fichaToken = null;
     }
-    const fichaLink = `${BASE_URL}/ficha?d=${fichaToken}`;
 
     const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "523349571689";
-    const msgConFicha = msg + `\n────────────────────\n🎨 *Ficha de diseño:*\n${fichaLink}`;
+    const msgConFicha = fichaToken
+      ? msg + `\n────────────────────\n🎨 *Ficha de diseño:*\n${BASE_URL}/ficha?d=${fichaToken}`
+      : msg;
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msgConFicha)}`;
 
     analytics.initiateCheckout(archetypeKey!, total, []);

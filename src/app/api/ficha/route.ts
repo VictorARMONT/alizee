@@ -37,9 +37,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
   }
 
-  const token = FICHA_SECRET
-    ? encryptFicha(payload, FICHA_SECRET)
-    : encodeFicha(payload); // fallback dev
+  if (FICHA_SECRET) {
+    return NextResponse.json({ token: encryptFicha(payload, FICHA_SECRET) });
+  }
 
-  return NextResponse.json({ token });
+  // Sin secreto: fail-closed en producción (no emitir PII sin cifrar).
+  // Fallback base64 SOLO en desarrollo.
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "ficha_not_configured" }, { status: 503 });
+  }
+  return NextResponse.json({ token: encodeFicha(payload) }); // dev only
 }

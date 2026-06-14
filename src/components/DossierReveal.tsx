@@ -73,7 +73,9 @@ const ENEAGRAMA: Record<ArchetypeKey, { num: number; name: string; trait: string
   sabio:      { num: 5, name: "El Investigador",  trait: "Observador y profundo. Recarga en silencio, decide con información." },
 };
 
-/* ── Saju (사주) — elemento dominante por año de nacimiento ── */
+/* ── Saju (사주) — SOLO el pilar del año (tronco celeste). El Saju completo usa
+   4 pilares (año/mes/día/hora = 8 caracteres); aquí mostramos 1 de 4, calculado
+   del tronco celeste del año. Por eso la UI lo rotula "pilar del año", no "tu Saju". ── */
 const SAJU_ELEMENTS = [
   { glyph: "木", name: "Madera", korean: "목" },
   { glyph: "木", name: "Madera", korean: "목" },
@@ -215,13 +217,6 @@ export function DossierReveal({
   const totemProfile = birthDate ? getTotemProfile(birthDate, answers, "sol") : null;
   const profesion    = getProfesion(answers.profesion);
 
-  const luckyNumbers = Array.from(
-    new Set([
-      ...(signInfo?.luckyNumbers ?? []),
-      ...(chinese?.luckyNumbers  ?? []),
-    ])
-  ).sort((a, b) => a - b).slice(0, 6);
-
   return (
     <div className="flex flex-col gap-10">
       {/* Animación de desbloqueo */}
@@ -304,7 +299,7 @@ export function DossierReveal({
                 <NatalBadge glyph={chinese.glyph} label={chinese.name} sublabel="Año chino" />
               )}
               {sajuEl && (
-                <NatalBadge glyph={sajuEl.glyph} label={sajuEl.name} sublabel={`Saju · ${sajuEl.korean}`} />
+                <NatalBadge glyph={sajuEl.glyph} label={sajuEl.name} sublabel={`Saju · pilar año`} />
               )}
             </div>
 
@@ -334,21 +329,26 @@ export function DossierReveal({
               </p>
             )}
 
-            {luckyNumbers.length > 0 && (
-              <div className="flex flex-col gap-1.5">
+            {kinMaya && (
+              <div className="flex flex-col gap-2">
                 <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--brand-fg-muted)]">
-                  Números de la suerte
+                  Sus números en el Cholq&apos;ij
                 </p>
-                <div className="flex gap-2 flex-wrap">
-                  {luckyNumbers.map((n) => (
-                    <span
-                      key={n}
-                      className="h-8 w-8 rounded-full border border-[var(--brand-border)] flex items-center justify-center text-[13px] font-medium tabular-nums text-[var(--brand-fg)]"
-                    >
-                      {n}
-                    </span>
-                  ))}
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className="shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-[15px] font-bold text-white tabular-nums"
+                    style={{ background: "linear-gradient(135deg, #F97316 0%, #E91E8C 100%)" }}
+                  >
+                    {kinMaya.tone}
+                  </span>
+                  <p className="text-[13px] leading-snug text-[var(--brand-fg)]">
+                    Tono <strong>{kinMaya.tone} de 13</strong> · {kinMaya.toneName}
+                  </p>
                 </div>
+                <p className="text-[11px] leading-snug text-[var(--brand-fg-muted)]">
+                  Día {kinMaya.kin} de 260 del calendario maya — su posición exacta en
+                  el ciclo sagrado del Cholq&apos;ij. No es predicción: es dónde cae en el conteo.
+                </p>
               </div>
             )}
 
@@ -397,30 +397,65 @@ export function DossierReveal({
               </p>
             </div>
 
-            {/* Piedras acompañantes */}
+            {/* Piedra de poder — convergencia entre disciplinas */}
             {totemProfile ? (
               <div className="flex flex-col gap-3 border-t border-[var(--brand-border)] pt-4">
-                <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--brand-fg-muted)]">
-                  Piedras acompañantes
-                </p>
-                <div className="flex flex-col gap-2">
-                  {[
-                    { tier: "Mes de nacimiento", ...totemProfile.stone.primary },
-                    { tier: "Signo solar",       ...totemProfile.stone.secondary },
-                    { tier: "Intención",         ...totemProfile.stone.intention },
-                  ].map((s, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full border border-[var(--brand-border)] shrink-0 mt-[1px] text-[var(--brand-fg-muted)]">
-                        {s.tier}
-                      </span>
-                      <div>
-                        <span className="text-[13px] font-semibold text-[var(--brand-fg)]">{s.name}</span>
-                        <span className="text-[11px] text-[var(--brand-fg-muted)] ml-1">— {s.reason}</span>
-                        <p className="text-[10px] italic text-[var(--brand-fg-muted)] opacity-75 mt-0.5">{s.source}</p>
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--brand-fg-muted)]">
+                    Piedra de poder
+                  </p>
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-[0.12em] px-2 py-0.5 rounded-full"
+                    style={{ background: "rgba(249,115,22,0.1)", color: "#F97316" }}
+                  >
+                    Convergencia {totemProfile.convergence.strength}
+                  </span>
                 </div>
+
+                {/* Piedra ganadora + conteo honesto */}
+                <div className="rounded-[var(--radius-md)] border bg-[var(--brand-bg)] px-4 py-3.5 flex flex-col gap-1.5"
+                  style={{ borderColor: "rgba(249,115,22,0.35)" }}
+                >
+                  <p className="text-[20px] font-semibold text-[var(--brand-fg)] leading-tight">
+                    {totemProfile.convergence.dominantStone}
+                  </p>
+                  <p className="text-[12px] text-[var(--brand-fg-muted)] leading-snug">
+                    Familia <strong className="text-[var(--brand-fg)]">{totemProfile.convergence.dominantFamily}</strong> ·{" "}
+                    <strong className="text-[var(--brand-fg)]">
+                      {totemProfile.convergence.agreement} de {totemProfile.convergence.total}
+                    </strong>{" "}
+                    sistemas independientes coinciden. Esta es la piedra que va en su box.
+                  </p>
+                </div>
+
+                {/* Lista de disciplinas — marca las que coinciden */}
+                <div className="flex flex-col gap-1.5">
+                  {totemProfile.convergence.disciplines.map((d, i) => {
+                    const agrees = d.family === totemProfile.convergence.dominantFamily;
+                    return (
+                      <div key={i} className="flex items-start gap-2">
+                        <span
+                          className="text-[12px] shrink-0 mt-[2px] w-4 text-center"
+                          style={{ color: agrees ? "var(--brand-primary)" : "var(--brand-fg-muted)", opacity: agrees ? 1 : 0.4 }}
+                        >
+                          {agrees ? "◆" : "◇"}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[12px] leading-snug">
+                            <span className="text-[var(--brand-fg-muted)]">{d.discipline}:</span>{" "}
+                            <span className={agrees ? "font-semibold text-[var(--brand-fg)]" : "text-[var(--brand-fg)]"}>{d.stone}</span>
+                          </p>
+                          <p className="text-[10px] italic text-[var(--brand-fg-muted)] opacity-70">{d.source}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <p className="text-[11px] leading-snug text-[var(--brand-fg-muted)] border-l-2 pl-3" style={{ borderColor: "rgba(233,30,140,0.25)" }}>
+                  Triangulación: cada eje —mes (GIA), signo solar, año chino y día del Cholq'ij maya— es un calendario distinto, calculado por separado. El signo cuenta una sola vez aunque dos tradiciones (occidental y Jyotish) lo lean. Cuando aun así coinciden en la misma familia mineral, esa coincidencia es la señal. No la inventamos: la encontramos.
+                </p>
+
                 <div className="flex items-start gap-2 rounded-[var(--radius-md)] border border-[var(--brand-border)] bg-[var(--brand-bg)] px-3 py-3">
                   <span className="text-[14px] shrink-0" style={{ color: "var(--brand-primary)" }}>⊕</span>
                   <div className="flex flex-col gap-0.5">
