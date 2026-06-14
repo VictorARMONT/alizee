@@ -13,11 +13,25 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-/* ── Conexión Redis (singleton) ─────────────────────────────────────── */
+/* ── Conexión Redis (singleton) ─────────────────────────────────────────
+   Vercel KV/Upstash a veces prefija las vars con el nombre del store
+   (p.ej. `alizee_KV_REST_API_URL`). Resolvemos por sufijo para no depender
+   del prefijo exacto. Excluye el token READ_ONLY (necesitamos escritura). */
+function resolveEnvBySuffix(suffix: string): string {
+  const exact = process.env[suffix];
+  if (exact) return exact;
+  for (const [key, value] of Object.entries(process.env)) {
+    if (value && key.endsWith("_" + suffix)) return value;
+  }
+  return "";
+}
+
 const REDIS_URL =
-  process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL ?? "";
+  resolveEnvBySuffix("KV_REST_API_URL") ||
+  resolveEnvBySuffix("UPSTASH_REDIS_REST_URL");
 const REDIS_TOKEN =
-  process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN ?? "";
+  resolveEnvBySuffix("KV_REST_API_TOKEN") ||
+  resolveEnvBySuffix("UPSTASH_REDIS_REST_TOKEN");
 
 const redis =
   REDIS_URL && REDIS_TOKEN
