@@ -65,7 +65,7 @@ export const BOX_TIERS: BoxTier[] = [
   },
 ];
 
-export const DEFAULT_TIER_IDX = 1; // Ritual — paquete por defecto (paso 7 del quiz)
+export const DEFAULT_TIER_IDX = 2; // Ceremonia — default + badge "más elegido" (ancla AOV alto, decisión Victor 13 jun)
 
 export const BASE_BOX_PRICE_MXN = BOX_TIERS[DEFAULT_TIER_IDX].priceMXN;
 
