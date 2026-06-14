@@ -86,7 +86,7 @@ export function QuizFlow() {
               ← Atrás
             </button>
           )}
-          <Logo height={18} href={null} />
+          <Logo height={18} href="/" />
         </div>
         <ProgressBar current={question.index} total={TOTAL_STEPS} />
       </header>

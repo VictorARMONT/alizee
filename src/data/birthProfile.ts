@@ -4,7 +4,8 @@
  * Sistemas:
  *   1. Signo solar       → zodiac.ts (existente)
  *   2. Animal chino      → ciclo 12 años con tabla de Año Nuevo Lunar exacta
- *   3. Kin Maya          → Dreamspell (Argüelles): ref Jul 26 1987 = Kin 1, sin contar Feb 29
+ *   3. Cholq'ij maya     → conteo Tzolk'in AUTÉNTICO, correlación GMT 584283
+ *                          (estándar académico). NO es Dreamspell/Argüelles.
  *
  * Human Design → necesita hora + lugar exactos (stub en fase 2).
  *
@@ -21,25 +22,6 @@ function dateToJDN(isoDate: string): number {
   const refMs   = new Date("2000-01-01T12:00:00Z").getTime();
   const birthMs = new Date(isoDate + "T12:00:00Z").getTime();
   return REF_JDN + Math.round((birthMs - refMs) / 86_400_000);
-}
-
-function isLeapYear(y: number): boolean {
-  return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
-}
-
-/** Cuenta cuántos Feb 29 caen estrictamente en (fromISO, toISO] */
-function countFeb29Between(fromISO: string, toISO: string): number {
-  if (fromISO >= toISO) return 0;
-  const fromYear = parseInt(fromISO.slice(0, 4), 10);
-  const toYear   = parseInt(toISO.slice(0, 4),   10);
-  let count = 0;
-  for (let y = fromYear; y <= toYear; y++) {
-    if (isLeapYear(y)) {
-      const feb29 = `${y}-02-29`;
-      if (feb29 > fromISO && feb29 <= toISO) count++;
-    }
-  }
-  return count;
 }
 
 /* ================================================================
@@ -132,11 +114,13 @@ export function getChineseZodiac(birthDateISO: string): ChineseZodiacInfo {
 }
 
 /* ================================================================
-   KIN MAYA — Dreamspell (Argüelles)
-   Sistema: Jul 26 1987 = Kin 1 (Dragón Magnético Rojo)
-   Regla: Feb 29 NO se cuenta en el ciclo Tzolkin (Día Fuera del Tiempo).
-   Diferencia vs Tzolkin tradicional GMT: el ajuste de bisiestos acumula
-   1 día de diferencia por cada año bisiesto transcurrido desde 1987.
+   CHOLQ'IJ / TZOLK'IN MAYA — conteo auténtico (correlación GMT 584283)
+   Estándar académico (Goodman–Martínez–Thompson). NO usa el sistema
+   Dreamspell de Argüelles (que reancla en 1987 y descarta Feb 29).
+   Aquí cada día gregoriano avanza el ciclo de 260 días sin excepciones,
+   como lo cuentan los Ajq'ijab' (guías mayas) hasta hoy.
+   Ancla verificada: JDN 584283 = "4 Ajaw" = 13.0.0.0.0 = 2012-12-21.
+   Nombres de nahual y tono en K'iche' (no en español Dreamspell).
    ================================================================ */
 
 export type KinColor = "rojo" | "blanco" | "azul" | "amarillo";
@@ -151,29 +135,36 @@ export interface KinMayaInfo {
   glyph: string;
 }
 
+/**
+ * Nombres de nahual en K'iche' (no Dreamspell). Mismo orden canónico que
+ * NAHUALES en cholqij.ts — el índice 0-19 es la única fuente de verdad y ambos
+ * módulos lo comparten. (Yucateco entre paréntesis para referencia.)
+ */
 const SEAL_NAMES: string[] = [
-  "Dragón",    // 0  Imix
-  "Viento",    // 1  Ik
-  "Noche",     // 2  Akbal
-  "Semilla",   // 3  Kan
-  "Serpiente", // 4  Chicchan
-  "Muerte",    // 5  Cimi
-  "Mano",      // 6  Manik
-  "Estrella",  // 7  Lamat
-  "Luna",      // 8  Muluc
-  "Perro",     // 9  Oc
-  "Mono",      // 10 Chuen
-  "Camino",    // 11 Eb
-  "Caña",      // 12 Ben
-  "Jaguar",    // 13 Ix
-  "Águila",    // 14 Men
-  "Guerrero",  // 15 Cib
-  "Tierra",    // 16 Caban
-  "Espejo",    // 17 Etznab
-  "Tormenta",  // 18 Cauac
-  "Sol",       // 19 Ahau
+  "Imox",     // 0  (Imix)
+  "Iq'",      // 1  (Ik')
+  "Aq'ab'al", // 2  (Ak'b'al)
+  "K'at",     // 3  (K'an)
+  "Kan",      // 4  (Chikchan)
+  "Keme",     // 5  (Kimi)
+  "Kej",      // 6  (Manik')
+  "Q'anil",   // 7  (Lamat)
+  "Toj",      // 8  (Muluk)
+  "Tz'i'",    // 9  (Ok)
+  "B'atz'",   // 10 (Chuwen)
+  "E",        // 11 (Eb')
+  "Aj",       // 12 (Ben)
+  "Ix",       // 13 (Ix)
+  "Tz'ikin",  // 14 (Men)
+  "Ajmaq",    // 15 (Kib')
+  "No'j",     // 16 (Kab'an)
+  "Tijax",    // 17 (Etz'nab')
+  "Kawoq",    // 18 (Kawak)
+  "Ajpu'",    // 19 (Ajaw)
 ];
 
+// Color direccional auténtico maya: Este-rojo, Norte-blanco, Oeste-azul/negro,
+// Sur-amarillo, ciclando por día-signo desde Imox. (Predate a Dreamspell.)
 const SEAL_COLORS: KinColor[] = [
   "rojo","blanco","azul","amarillo",
   "rojo","blanco","azul","amarillo",
@@ -187,68 +178,69 @@ const SEAL_COLORS: KinColor[] = [
  * Sustituir con SVG oficial cuando Victor entregue assets.
  */
 const SEAL_GLYPHS: string[] = [
-  "⬡",  // 0  Dragón
-  "∿",  // 1  Viento
-  "☾",  // 2  Noche
-  "⬦",  // 3  Semilla
-  "∞",  // 4  Serpiente
-  "▲",  // 5  Muerte
-  "✶",  // 6  Mano
-  "★",  // 7  Estrella
-  "☽",  // 8  Luna
-  "◯",  // 9  Perro
-  "✿",  // 10 Mono
-  "⊙",  // 11 Camino   ← era ◆ (conflicto de marca — corregido)
-  "▽",  // 12 Caña
-  "◼",  // 13 Jaguar
-  "◣",  // 14 Águila
-  "◤",  // 15 Guerrero
-  "⊕",  // 16 Tierra
-  "⊗",  // 17 Espejo
-  "❋",  // 18 Tormenta
-  "☉",  // 19 Sol
+  "⬡",  // 0  Imox
+  "∿",  // 1  Iq'
+  "☾",  // 2  Aq'ab'al
+  "⬦",  // 3  K'at
+  "∞",  // 4  Kan
+  "▲",  // 5  Keme
+  "✶",  // 6  Kej
+  "★",  // 7  Q'anil
+  "☽",  // 8  Toj
+  "◯",  // 9  Tz'i'
+  "✿",  // 10 B'atz'
+  "⊙",  // 11 E       ← era ◆ (conflicto de marca — corregido)
+  "▽",  // 12 Aj
+  "◼",  // 13 Ix
+  "◣",  // 14 Tz'ikin
+  "◤",  // 15 Ajmaq
+  "⊕",  // 16 No'j
+  "⊗",  // 17 Tijax
+  "❋",  // 18 Kawoq
+  "☉",  // 19 Ajpu'
 ];
 
+// Tonos 1-13 en K'iche' (numerales mayas). El Dreamspell los renombra
+// (Magnético, Lunar…); esos nombres son invención de Argüelles, no tradición.
 const TONE_NAMES: string[] = [
-  "Magnético",    // 1
-  "Lunar",        // 2
-  "Eléctrico",    // 3
-  "Autoexistente",// 4
-  "Armónico",     // 5  ← era "Overtono" (anglicismo corregido)
-  "Rítmico",      // 6
-  "Resonante",    // 7
-  "Galáctico",    // 8
-  "Solar",        // 9
-  "Planetario",   // 10
-  "Espectral",    // 11
-  "Cristal",      // 12
-  "Cósmico",      // 13
+  "Jun",        // 1
+  "Keb'",       // 2
+  "Oxib'",      // 3
+  "Kajib'",     // 4
+  "Job'",       // 5
+  "Waqib'",     // 6
+  "Wuqub'",     // 7
+  "Wajxaqib'",  // 8
+  "B'elejeb'",  // 9
+  "Lajuj",      // 10
+  "Junlajuj",   // 11
+  "Kab'lajuj",  // 12
+  "Oxlajuj",    // 13
 ];
 
 /**
- * Calcula el Kin Maya en sistema Dreamspell (Argüelles).
+ * Calcula el día del Cholq'ij (Tzolk'in) en el conteo AUTÉNTICO, correlación
+ * GMT 584283 — el mismo que siguen los Ajq'ijab' mayas hoy. Cada día gregoriano
+ * avanza el ciclo de 260 sin excepciones (sin "día fuera del tiempo").
  *
- * Referencia: 26 julio 1987 = Kin 1 (Dragón Magnético Rojo).
- * Regla bisiesto: Feb 29 no avanza el contador Tzolkin.
- *   - Para fechas > ref: descuenta los Feb 29 ocurridos después de ref.
- *   - Para fechas < ref: suma los Feb 29 ocurridos antes de ref.
+ * Verificación: JDN 584283 = "4 Ajaw" (13.0.0.0.0 = 2012-12-21). Su posición
+ * dentro del ciclo 0-259 es 159; de ahí el ancla. Probado también contra
+ * 2012-12-21 → 4 Ajpu' (tono 4, sello 19).
+ *
+ * Nota: `kin` (1-260) se conserva como "día del ciclo" para orden/render; el
+ * concepto "Kin N" como tal es Dreamspell, así que la UI lo muestra como día
+ * del Cholq'ij o como "tono + nahual" (forma K'iche' real).
  */
 export function getKinMaya(birthDateISO: string): KinMayaInfo {
-  const REF_ISO = "1987-07-26"; // Kin 1 en Dreamspell
-  const REF_JDN = 2447003;     // JDN correcto de Jul 26 1987 (era 2447019 → +16 días de error)
+  const GMT_CORR  = 584283; // correlación Goodman–Martínez–Thompson
+  const TZ_ANCHOR = 159;    // posición 0-259 de "4 Ajaw" (JDN 584283) en el ciclo
 
-  const birthJDN = dateToJDN(birthDateISO);
-  const rawDays  = birthJDN - REF_JDN;
+  const jdn   = dateToJDN(birthDateISO);
+  const tzPos = (((jdn - GMT_CORR + TZ_ANCHOR) % 260) + 260) % 260;
 
-  const leapAdj = birthDateISO >= REF_ISO
-    ? -countFeb29Between(REF_ISO, birthDateISO)
-    :  +countFeb29Between(birthDateISO, REF_ISO);
-
-  const dreamspellDays = rawDays + leapAdj;
-  const pos       = ((dreamspellDays % 260) + 260) % 260;
-  const kin       = pos + 1;
-  const sealIndex = pos % 20;
-  const tone      = (pos % 13) + 1;
+  const kin       = tzPos + 1;        // día 1-260 del Cholq'ij
+  const sealIndex = tzPos % 20;       // 0 Imox … 19 Ajpu'
+  const tone      = (tzPos % 13) + 1; // 1-13
 
   return {
     kin,

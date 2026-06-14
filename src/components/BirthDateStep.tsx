@@ -147,7 +147,7 @@ export function BirthDateStep({
                             </span>
                             <div>
                               <p className="text-[13px] font-semibold text-[var(--brand-fg)]">{kinMaya.sealName}</p>
-                              <p className="text-[10px] uppercase tracking-[0.15em] text-[var(--brand-fg-muted)]">Kin {kinMaya.kin}</p>
+                              <p className="text-[10px] uppercase tracking-[0.15em] text-[var(--brand-fg-muted)]">Nahual maya</p>
                             </div>
                           </div>
                         )}

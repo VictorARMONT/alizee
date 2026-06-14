@@ -54,6 +54,30 @@ export interface StoneRecommendation {
   intention: { name: string; reason: string; source: string };
 }
 
+/** Una piedra propuesta por UNA disciplina independiente. */
+export interface DisciplineStone {
+  discipline: string;  // nombre legible de la disciplina
+  stone: string;
+  family: string;
+  reason: string;
+  source: string;
+}
+
+/**
+ * Resultado de triangulación / validez convergente.
+ * Cuenta cuántas disciplinas independientes coinciden en la misma familia
+ * mineral. Más coincidencia entre sistemas que no se hablan = señal más fuerte.
+ */
+export interface ConvergenceResult {
+  disciplines: DisciplineStone[];   // todas las disciplinas reales evaluadas
+  total: number;                    // nº de disciplinas independientes
+  dominantFamily: string;           // familia mineral más recurrente
+  dominantStone: string;            // piedra representativa de esa familia (la del box)
+  agreement: number;                // nº de disciplinas que caen en la familia dominante
+  agreeingDisciplines: string[];    // cuáles coinciden
+  strength: "alta" | "media" | "baja";
+}
+
 export interface TotemProfile {
   /* Capas físicas del tótem — de abajo hacia arriba */
   pedestal: TotemLayer;   // elemento zodiacal
@@ -64,6 +88,7 @@ export interface TotemProfile {
 
   /* Datos complementarios */
   stone: StoneRecommendation;
+  convergence: ConvergenceResult;
   sacredPlace: { type: string; examples: string[]; planet: string };
 
   /* Descripción narrativa del tótem completo */
@@ -206,9 +231,10 @@ const ZODIAC_TOTEM: Record<SunSign, ZodiacTotemData> = {
 };
 
 /* ================================================================
-   CAPA 3 — CUERPO: Sello Maya Tzolkin (20 variantes)
-   Fuente: iconografía Tzolkin clásico. Animales según correspondencia
-   Maya-Quiché documentada (Tedlock 1992, Argüelles 1987).
+   CAPA 3 — CUERPO: Nahual del Cholq'ij / Tzolk'in (20 variantes)
+   Nombres en K'iche' (mismo orden canónico que cholqij.ts y que
+   getKinMaya().sealIndex, conteo GMT auténtico). Animales/energía según
+   correspondencia Maya-K'iche' documentada (Tedlock 1992; ALMG).
    ================================================================ */
 
 interface SealTotemData {
@@ -220,26 +246,26 @@ interface SealTotemData {
 }
 
 const SEAL_TOTEM: Record<number, SealTotemData> = {
-  0:  { name:"Dragón",   animal:"Caimán",           energyKey:"Ser",          description:"Caimán primordial. Nacimiento, nutrición, sangre.",           printNote:"Cuerpo de caimán enroscado. Escamas en relieve." },
-  1:  { name:"Viento",   animal:"Quetzal",           energyKey:"Espíritu",     description:"Quetzal en vuelo. Comunicación, aliento, cambio.",             printNote:"Plumas de quetzal en movimiento espiral ascendente." },
-  2:  { name:"Noche",    animal:"Jaguar Nocturno",   energyKey:"Sueño",        description:"Jaguar de la noche. Introspección, abundancia interior.",       printNote:"Jaguar en reposo. Manchas en patrón geométrico." },
-  3:  { name:"Semilla",  animal:"Lagarto Verde",     energyKey:"Florecimiento",description:"Lagarto sobre semilla. Potencial, targeting, fertilidad.",      printNote:"Lagarto con semilla germinando entre sus garras." },
-  4:  { name:"Serpiente",animal:"Serpiente de Cascabel", energyKey:"Fuerza",   description:"Cascabel enrollada. Fuerza vital, instinto, kundalini.",        printNote:"Serpiente enroscada en espiral ascendente." },
-  5:  { name:"Muerte",   animal:"Lechuza Blanca",    energyKey:"Igualdad",     description:"Lechuza de la transición. Fin que abre otro ciclo.",            printNote:"Lechuza con alas desplegadas sobre cráneo estilizado." },
-  6:  { name:"Mano",     animal:"Venado",            energyKey:"Conocimiento", description:"Venado con manos. Sanación, logro, gracia natural.",            printNote:"Mano abierta con cornamenta de venado integrada." },
-  7:  { name:"Estrella", animal:"Conejo Lunar",      energyKey:"Elegancia",    description:"Conejo de la luna. Belleza, armonía, arte.",                   printNote:"Conejo en estrella de 8 puntas. Textura lunar." },
-  8:  { name:"Luna",     animal:"Delfín",            energyKey:"Purificación", description:"Delfín bajo luna. Flujo emocional, acción universal.",          printNote:"Delfín saltando en arco lunar." },
-  9:  { name:"Perro",    animal:"Xoloitzcuintle",    energyKey:"Amor",         description:"Xolo guía de almas. Lealtad, amor incondicional, guía.",        printNote:"Xoloitzcuintle sentado, oreja erguida, collar de jade." },
-  10: { name:"Mono",     animal:"Mono Araña",        energyKey:"Juego",        description:"Mono araña. Arte, humor, magia creativa.",                      printNote:"Mono araña con herramientas de artesano." },
-  11: { name:"Camino",   animal:"Armadillo",         energyKey:"Servicio",     description:"Armadillo en camino. Viaje interior, guía de la humanidad.",    printNote:"Armadillo en sendero espiral. Escudo en relieve." },
-  12: { name:"Caña",     animal:"Colibrí",           energyKey:"Inteligencia", description:"Colibrí en caña. Tenacidad, profecia, tubo hacia lo divino.",   printNote:"Colibrí dentro de caña de maíz estilizada." },
-  13: { name:"Jaguar",   animal:"Jaguar",            energyKey:"Magia",        description:"Jaguar chamán. Visión mágica, integridad, mundo interior.",     printNote:"Cabeza de jaguar frontal. Rosetas en relieve profundo." },
-  14: { name:"Águila",   animal:"Águila Real",       energyKey:"Visión",       description:"Águila real. Visión creativa, mente global.",                   printNote:"Águila con alas extendidas. Vista de plumas detallada." },
-  15: { name:"Guerrero", animal:"Zopilote Real",     energyKey:"Inteligencia", description:"Zopilote sagrado. Cuestión, purificación, valentía.",           printNote:"Zopilote con escudo circular en pecho." },
-  16: { name:"Tierra",   animal:"Oso Hormiguero",    energyKey:"Navegación",   description:"Oso hormiguero. Evolución, navegación sincrónica.",             printNote:"Oso hormiguero con mapa de coordenadas en el lomo." },
-  17: { name:"Espejo",   animal:"Halcón Peregrino",  energyKey:"Sin fin",      description:"Halcón espejo. Reflexión, verdad de pedernal, infinito.",       printNote:"Halcón en espejo de obsidiana. Simetría perfecta." },
-  18: { name:"Tormenta", animal:"Tortuga Cósmica",   energyKey:"Auto-generación", description:"Tortuga del trueno. Catálisis, energía del rayo.",           printNote:"Tortuga con caparazón-mapa celeste. Rayos en relieve." },
-  19: { name:"Sol",      animal:"Puma Solar",        energyKey:"Fuego Universal", description:"Puma del sol. Iluminación, vida universal, ascensión.",       printNote:"Puma en postura solar. Corona de rayos integrada." },
+  0:  { name:"Imox",     animal:"Cocodrilo",         energyKey:"Origen",       description:"Cocodrilo primordial. Subconsciente colectivo, nutrición, vida.", printNote:"Cuerpo de cocodrilo enroscado. Escamas en relieve." },
+  1:  { name:"Iq'",      animal:"Colibrí",           energyKey:"Espíritu",     description:"Viento que siembra ideas. Comunicación, aliento, cambio.",      printNote:"Plumas en movimiento espiral ascendente." },
+  2:  { name:"Aq'ab'al", animal:"Conejo",            energyKey:"Amanecer",     description:"Umbral del alba. Introspección, lo que se ve antes de la luz.", printNote:"Conejo en reposo. Patrón de aurora geométrico." },
+  3:  { name:"K'at",     animal:"Araña",             energyKey:"Red",          description:"Red que conecta. Comunidad, recursos, fertilidad.",             printNote:"Telaraña tejida con semillas en los nudos." },
+  4:  { name:"Kan",      animal:"Serpiente Emplumada", energyKey:"Fuerza",     description:"Energía vital que asciende. Instinto, transformación.",         printNote:"Serpiente enroscada en espiral ascendente." },
+  5:  { name:"Keme",     animal:"Búho",              energyKey:"Transición",   description:"Guardián de los finales. Lo que muere abre otro ciclo.",        printNote:"Búho con alas desplegadas sobre cráneo estilizado." },
+  6:  { name:"Kej",      animal:"Venado",            energyKey:"Guardián",     description:"Venado guardián. Liderazgo con gracia, fuerza sin imposición.", printNote:"Venado con cornamenta integrada y manos abiertas." },
+  7:  { name:"Q'anil",   animal:"Conejo / Liebre",   energyKey:"Semilla",      description:"Semilla que germina. Abundancia, fertilidad, arte.",            printNote:"Conejo en estrella de 8 puntas. Textura de grano." },
+  8:  { name:"Toj",      animal:"Jaguar del Agua",   energyKey:"Ofrenda",      description:"Equilibrio kármico. Ofrenda, lluvia, flujo emocional.",         printNote:"Jaguar bajo arco de lluvia." },
+  9:  { name:"Tz'i'",    animal:"Perro",             energyKey:"Ley",          description:"Guardián de la ley. Lealtad, justicia, amor incondicional.",    printNote:"Perro sentado, oreja erguida, collar de jade." },
+  10: { name:"B'atz'",   animal:"Mono Araña",        energyKey:"Hilo del tiempo", description:"Tejedor del tiempo. Arte, humor, ceremonia.",                printNote:"Mono araña con herramientas de artesano." },
+  11: { name:"E",        animal:"Venado del Camino", energyKey:"Camino",       description:"El caminante. Viaje, guía por el ejemplo.",                     printNote:"Sendero espiral con huellas en relieve." },
+  12: { name:"Aj",       animal:"Loro Verde",        energyKey:"Hogar",        description:"Caña / hogar. Pertenencia, autoridad serena, raíces.",          printNote:"Caña de maíz estilizada con loro posado." },
+  13: { name:"Ix",       animal:"Jaguar",            energyKey:"Magia",        description:"Nagual jaguar. Visión chamánica, magia, mundo interior.",       printNote:"Cabeza de jaguar frontal. Rosetas en relieve profundo." },
+  14: { name:"Tz'ikin",  animal:"Águila",            energyKey:"Visión",       description:"Mensajero alado. Visión de panorama, puente entre mundos.",     printNote:"Águila con alas extendidas. Plumas detalladas." },
+  15: { name:"Ajmaq",    animal:"Buitre Rey",        energyKey:"Perdón",       description:"Sanador del linaje. Perdón, liberación del karma ancestral.",   printNote:"Buitre rey con escudo circular en pecho." },
+  16: { name:"No'j",     animal:"Coyote",            energyKey:"Pensamiento",  description:"Inteligencia cósmica. Pensamiento al servicio del colectivo.",  printNote:"Coyote con mapa de coordenadas en el lomo." },
+  17: { name:"Tijax",    animal:"Murciélago",        energyKey:"Filo",         description:"Pedernal que sana. Corta lo que ya no sirve, verdad precisa.",  printNote:"Filo de obsidiana en simetría perfecta." },
+  18: { name:"Kawoq",    animal:"Tortuga",           energyKey:"Comunidad",    description:"Tormenta que nutre. Servicio, refugio, hogar colectivo.",       printNote:"Tortuga con caparazón-mapa celeste. Rayos en relieve." },
+  19: { name:"Ajpu'",    animal:"Colibrí Solar",     energyKey:"Sol",          description:"Héroe solar. Iluminación, integración de luz y sombra.",        printNote:"Colibrí en postura solar. Corona de rayos integrada." },
 };
 
 /* ================================================================
@@ -359,6 +385,221 @@ const ARCHETYPE_STONES: Record<ArchetypeKey, StoneData> = {
   sabio:      { name:"Amatista Oscura", color:"Violeta profundo",family:"Cuarzo",  properties:"Profundidad mental, calma, conexión interna.", sourceSystem:"Curaduría ALIZEE — correspondencia mineral tradicional" },
 };
 
+/* ----------------------------------------------------------------
+   SISTEMA 4 — Piedra planetaria védica (signo → planeta regente → navaratna)
+   Sistema reglado real: cada signo tropical tiene un planeta regente
+   tradicional, y el Jyotish (astrología india) asigna a cada graha una de
+   las 9 navaratna. Independiente de la lapidaria occidental y de GIA.
+   Fuente: Jyotish / sistema Navaratna (regencias tradicionales).
+   ---------------------------------------------------------------- */
+const PLANETARY_STONES: Record<SunSign, StoneData & { planet: string }> = {
+  aries:       { planet:"Marte",    name:"Coral Rojo",      color:"Rojo coral",   family:"Orgánica",  properties:"Coraje, energía de Marte, protección.",         sourceSystem:"Jyotish — Marte (Mangal) · navaratna" },
+  tauro:       { planet:"Venus",    name:"Diamante",        color:"Transparente", family:"Carbono",   properties:"Placer, valor, amor de Venus (Shukra).",        sourceSystem:"Jyotish — Venus (Shukra) · navaratna" },
+  geminis:     { planet:"Mercurio", name:"Esmeralda",       color:"Verde",        family:"Berilo",    properties:"Mente, palabra, agilidad de Mercurio.",         sourceSystem:"Jyotish — Mercurio (Budha) · navaratna" },
+  cancer:      { planet:"Luna",     name:"Perla",           color:"Blanco nácar", family:"Orgánica",  properties:"Emoción, calma, ciclo lunar (Chandra).",        sourceSystem:"Jyotish — Luna (Chandra) · navaratna" },
+  leo:         { planet:"Sol",      name:"Rubí",            color:"Rojo fuego",   family:"Corindón",  properties:"Autoridad solar, vitalidad (Surya).",           sourceSystem:"Jyotish — Sol (Surya) · navaratna" },
+  virgo:       { planet:"Mercurio", name:"Esmeralda",       color:"Verde",        family:"Berilo",    properties:"Precisión, análisis, palabra de Mercurio.",     sourceSystem:"Jyotish — Mercurio (Budha) · navaratna" },
+  libra:       { planet:"Venus",    name:"Diamante",        color:"Transparente", family:"Carbono",   properties:"Belleza, equilibrio, amor de Venus.",           sourceSystem:"Jyotish — Venus (Shukra) · navaratna" },
+  escorpio:    { planet:"Marte",    name:"Coral Rojo",      color:"Rojo coral",   family:"Orgánica",  properties:"Intensidad, poder y empuje de Marte.",          sourceSystem:"Jyotish — Marte (Mangal) · navaratna" },
+  sagitario:   { planet:"Júpiter",  name:"Zafiro Amarillo", color:"Amarillo oro", family:"Corindón",  properties:"Expansión, sabiduría, suerte de Júpiter.",      sourceSystem:"Jyotish — Júpiter (Guru) · navaratna" },
+  capricornio: { planet:"Saturno",  name:"Zafiro Azul",     color:"Azul real",    family:"Corindón",  properties:"Disciplina, estructura, karma de Saturno.",     sourceSystem:"Jyotish — Saturno (Shani) · navaratna" },
+  acuario:     { planet:"Saturno",  name:"Zafiro Azul",     color:"Azul real",    family:"Corindón",  properties:"Visión, prueba y madurez de Saturno.",          sourceSystem:"Jyotish — Saturno (Shani) · navaratna" },
+  piscis:      { planet:"Júpiter",  name:"Zafiro Amarillo", color:"Amarillo oro", family:"Corindón",  properties:"Fe, compasión, abundancia de Júpiter.",         sourceSystem:"Jyotish — Júpiter (Guru) · navaratna" },
+};
+
+/* ----------------------------------------------------------------
+   SISTEMA 5 — Piedra del año chino (animal → piedra de la suerte)
+   Tradición popular china, sin estándar gemológico único; las atribuciones
+   de Perro y Cerdo varían entre fuentes. Sistema independiente del resto.
+   Fuente: tradición china de piedras de la suerte (KarmaWeather y otras).
+   ---------------------------------------------------------------- */
+const CHINESE_STONES: Record<ChineseAnimalKey, StoneData> = {
+  rata:      { name:"Granate",  color:"Rojo profundo", family:"Granate",  properties:"Coraje, estabilidad, éxito.",        sourceSystem:"Tradición china — piedra de la suerte (Rata)" },
+  buey:      { name:"Jade",     color:"Verde",         family:"Piroxeno", properties:"Calma, prosperidad, constancia.",    sourceSystem:"Tradición china — piedra de la suerte (Buey)" },
+  tigre:     { name:"Zafiro",   color:"Azul real",     family:"Corindón", properties:"Fortuna, protección, valentía.",     sourceSystem:"Tradición china — piedra de la suerte (Tigre)" },
+  conejo:    { name:"Perla",    color:"Blanco nácar",  family:"Orgánica", properties:"Suerte, protección, ternura.",       sourceSystem:"Tradición china — piedra de la suerte (Conejo)" },
+  dragon:    { name:"Amatista", color:"Violeta",       family:"Cuarzo",   properties:"Crecimiento espiritual, éxito.",     sourceSystem:"Tradición china — piedra de la suerte (Dragón)" },
+  serpiente: { name:"Ópalo",    color:"Multicolor",    family:"Ópalo",    properties:"Sabiduría, fortuna, protección.",    sourceSystem:"Tradición china — piedra de la suerte (Serpiente)" },
+  caballo:   { name:"Topacio",  color:"Amarillo",      family:"Silicato", properties:"Abundancia, energía, éxito.",        sourceSystem:"Tradición china — piedra de la suerte (Caballo)" },
+  cabra:     { name:"Esmeralda",color:"Verde",         family:"Berilo",   properties:"Paz, abundancia, creatividad.",      sourceSystem:"Tradición china — piedra de la suerte (Cabra)" },
+  mono:      { name:"Turquesa", color:"Azul turquesa", family:"Fosfato",  properties:"Suerte, protección, optimismo.",     sourceSystem:"Tradición china — piedra de la suerte (Mono)" },
+  gallo:     { name:"Citrino",  color:"Amarillo miel", family:"Cuarzo",   properties:"Riqueza, poder personal, suerte.",   sourceSystem:"Tradición china — piedra de la suerte (Gallo)" },
+  perro:     { name:"Diamante", color:"Transparente",  family:"Carbono",  properties:"Lealtad, claridad, protección.",     sourceSystem:"Tradición china — piedra de la suerte (Perro · varía por fuente)" },
+  cerdo:     { name:"Rubí",     color:"Rojo fuego",    family:"Corindón", properties:"Prosperidad, calidez, fortuna.",     sourceSystem:"Tradición china — piedra de la suerte (Cerdo · varía por fuente)" },
+};
+
+/* ----------------------------------------------------------------
+   SISTEMA 6 — Piedra mesoamericana por nahual (sello Tzolkin 0-19)
+   Restringido a la paleta lapidaria real Maya/Mexica documentada:
+     Jade/jadeíta (chalchihuitl) — agua sagrada, aliento, vida, realeza
+     Obsidiana (itztli)         — "piedra que habla", corte, espejo, inframundo
+     Turquesa (xihuitl)         — "año/tiempo", cielo, fuego solar
+     Pirita                     — espejo solar tolteca, reflexión
+     Ámbar (apozonalli)         — sol atrapado, calor, resina viva
+   Cada nahual recibe la piedra más fiel a su esencia documentada.
+   Fuente: arqueología mesoamericana (jade, obsidiana, turquesa, pirita).
+   ---------------------------------------------------------------- */
+const NAHUAL_STONES: Record<number, StoneData> = {
+  0:  { name:"Jade",     color:"Verde agua",   family:"Piroxeno",        properties:"Agua primordial, origen y vida.",            sourceSystem:"Lapidaria Maya — chalchihuitl (jade)" },
+  1:  { name:"Turquesa", color:"Azul cielo",   family:"Fosfato",         properties:"Aliento y viento, puente entre mundos.",     sourceSystem:"Lapidaria Mexica — xihuitl (turquesa)" },
+  2:  { name:"Obsidiana",color:"Negro",        family:"Vidrio volcánico",properties:"Umbral noche-luz, espejo del alba.",         sourceSystem:"Lapidaria Mexica — itztli (obsidiana)" },
+  3:  { name:"Ámbar",    color:"Naranja miel", family:"Orgánica",        properties:"Semilla de luz, calor que germina.",         sourceSystem:"Lapidaria Mexica — apozonalli (ámbar)" },
+  4:  { name:"Ámbar",    color:"Naranja fuego",family:"Orgánica",        properties:"Fuego vital que asciende, fuerza serpiente.", sourceSystem:"Lapidaria Mexica — apozonalli (ámbar)" },
+  5:  { name:"Obsidiana",color:"Negro",        family:"Vidrio volcánico",properties:"Inframundo, transición, lo que muere y libera.",sourceSystem:"Lapidaria Mexica — itztli (obsidiana)" },
+  6:  { name:"Jade",     color:"Verde",        family:"Piroxeno",        properties:"Naturaleza, sostén, liderazgo que cuida.",   sourceSystem:"Lapidaria Maya — chalchihuitl (jade)" },
+  7:  { name:"Jade",     color:"Verde claro",  family:"Piroxeno",        properties:"Fertilidad, crecimiento, abundancia.",       sourceSystem:"Lapidaria Maya — chalchihuitl (jade)" },
+  8:  { name:"Jade",     color:"Verde agua",   family:"Piroxeno",        properties:"Lluvia, equilibrio, ofrenda.",               sourceSystem:"Lapidaria Maya — chalchihuitl (jade)" },
+  9:  { name:"Obsidiana",color:"Negro",        family:"Vidrio volcánico",properties:"Espejo de la verdad, ley y justicia.",       sourceSystem:"Lapidaria Mexica — itztli (obsidiana)" },
+  10: { name:"Turquesa", color:"Azul turquesa",family:"Fosfato",         properties:"Hilo del tiempo (xihuitl = 'año'), arte.",   sourceSystem:"Lapidaria Mexica — xihuitl (turquesa)" },
+  11: { name:"Turquesa", color:"Azul cielo",   family:"Fosfato",         properties:"Camino, viaje, protección del andar.",       sourceSystem:"Lapidaria Mexica — xihuitl (turquesa)" },
+  12: { name:"Jade",     color:"Verde",        family:"Piroxeno",        properties:"Hogar, raíz, pertenencia.",                  sourceSystem:"Lapidaria Maya — chalchihuitl (jade)" },
+  13: { name:"Obsidiana",color:"Negro",        family:"Vidrio volcánico",properties:"Jaguar de Tezcatlipoca, magia, espejo humeante.",sourceSystem:"Lapidaria Mexica — itztli (obsidiana)" },
+  14: { name:"Turquesa", color:"Azul cielo",   family:"Fosfato",         properties:"Cielo, visión, mensajero entre mundos.",     sourceSystem:"Lapidaria Mexica — xihuitl (turquesa)" },
+  15: { name:"Obsidiana",color:"Negro",        family:"Vidrio volcánico",properties:"Limpieza de lo muerto, perdón, sombra.",     sourceSystem:"Lapidaria Mexica — itztli (obsidiana)" },
+  16: { name:"Pirita",   color:"Dorado",       family:"Sulfuro",         properties:"Espejo de la mente, reflexión, pensamiento.",sourceSystem:"Lapidaria tolteca — pirita (espejo)" },
+  17: { name:"Obsidiana",color:"Negro",        family:"Vidrio volcánico",properties:"Pedernal/itztli: la piedra que corta y predice.",sourceSystem:"Lapidaria Mexica — itztli (obsidiana)" },
+  18: { name:"Jade",     color:"Verde agua",   family:"Piroxeno",        properties:"Tormenta que nutre, comunidad, refugio.",    sourceSystem:"Lapidaria Maya — chalchihuitl (jade)" },
+  19: { name:"Pirita",   color:"Dorado solar", family:"Sulfuro",         properties:"Espejo solar tolteca, héroe del Sol.",       sourceSystem:"Lapidaria tolteca — pirita (espejo solar)" },
+};
+
+/* ----------------------------------------------------------------
+   NORMALIZACIÓN DE FAMILIA MINERAL — para detectar convergencia entre
+   sistemas que nombran piedras distintas pero de la misma familia
+   (ej. Rubí y Zafiro = Corindón; Amatista, Ágata, Citrino = Cuarzo).
+   ---------------------------------------------------------------- */
+const FAMILY_OF: Record<string, string> = {
+  "Rubí":"Corindón", "Zafiro":"Corindón", "Zafiro Azul":"Corindón", "Zafiro Amarillo":"Corindón",
+  "Esmeralda":"Berilo", "Aguamarina":"Berilo",
+  "Amatista":"Cuarzo", "Amatista Oscura":"Cuarzo", "Citrino":"Cuarzo", "Ágata":"Cuarzo",
+  "Ágata de Fuego":"Cuarzo", "Ojo de Tigre":"Cuarzo", "Cuarzo Ahumado":"Cuarzo",
+  "Cuarzo":"Cuarzo", "Cuarzo Blanco":"Cuarzo",
+  "Diamante":"Carbono",
+  "Perla":"Orgánica", "Coral Rojo":"Orgánica", "Ámbar":"Orgánica",
+  "Piedra Luna":"Feldespato",
+  "Peridoto":"Olivino",
+  "Topacio":"Silicato",
+  "Granate":"Granate",
+  "Ópalo":"Ópalo",
+  "Turquesa":"Fosfato",
+  "Obsidiana":"Vidrio volcánico",
+  "Jade":"Piroxeno",
+  "Pirita":"Sulfuro",
+  "Onix":"Cuarzo", "Sardónice":"Cuarzo", "Lapislázuli":"Lazurita",
+};
+
+function familyOf(stone: string): string {
+  return FAMILY_OF[stone] ?? stone;
+}
+
+/* ================================================================
+   MOTOR DE CONVERGENCIA — triangulación entre disciplinas
+   ================================================================ */
+
+/**
+ * Reúne la piedra que propone cada EJE natal independiente y mide su intersección.
+ *
+ * Honestidad del conteo: un "eje" es una coordenada de nacimiento distinta
+ * (mes, signo solar, año chino, día del Cholq'ij). Un mismo eje puede tener varias
+ * lecturas tradicionales —el signo solar lo leen tanto la lapidaria occidental como
+ * el Jyotish— pero esas dos NO son pruebas independientes: salen del mismo dato.
+ * Por eso la convergencia cuenta EJES, no lecturas: el signo vota una sola vez.
+ * La curaduría ALIZEE (arquetipo) tampoco entra: no es disciplina externa.
+ */
+export function computeConvergence(
+  sign: SunSign | null,
+  chineseKey: ChineseAnimalKey | null,
+  sealIndex: number | null,
+  month: number | null,
+): ConvergenceResult {
+  interface Reading { discipline: string; stone: string; family: string; reason: string; source: string }
+  interface Axis { id: string; readings: Reading[] }
+
+  const axes: Axis[] = [];
+
+  if (month && BIRTHSTONES_BY_MONTH[month]) {
+    const s = BIRTHSTONES_BY_MONTH[month];
+    axes.push({ id: "mes", readings: [
+      { discipline: "Mes de nacimiento (GIA)", stone: s.name, family: familyOf(s.name), reason: s.properties, source: s.sourceSystem },
+    ] });
+  }
+  if (sign) {
+    const z = ZODIAC_STONES[sign];
+    const p = PLANETARY_STONES[sign];
+    axes.push({ id: "signo", readings: [
+      { discipline: "Signo · lapidaria occidental", stone: z.name, family: familyOf(z.name), reason: z.properties, source: z.sourceSystem },
+      { discipline: `Signo · Jyotish (${p.planet})`, stone: p.name, family: familyOf(p.name), reason: p.properties, source: p.sourceSystem },
+    ] });
+  }
+  if (chineseKey) {
+    const c = CHINESE_STONES[chineseKey];
+    axes.push({ id: "chino", readings: [
+      { discipline: "Año chino", stone: c.name, family: familyOf(c.name), reason: c.properties, source: c.sourceSystem },
+    ] });
+  }
+  if (sealIndex != null && NAHUAL_STONES[sealIndex]) {
+    const n = NAHUAL_STONES[sealIndex];
+    axes.push({ id: "maya", readings: [
+      { discipline: "Nahual · lapidaria mesoamericana", stone: n.name, family: familyOf(n.name), reason: n.properties, source: n.sourceSystem },
+    ] });
+  }
+
+  // Familia dominante: la familia con más lecturas (solo para ELEGIR la piedra del box).
+  const allReadings = axes.flatMap((a) => a.readings);
+  const familyCount = new Map<string, Reading[]>();
+  for (const r of allReadings) {
+    const list = familyCount.get(r.family) ?? [];
+    list.push(r);
+    familyCount.set(r.family, list);
+  }
+  let dominantFamily = allReadings[0]?.family ?? "Cuarzo";
+  let best = 0;
+  for (const [fam, list] of familyCount) {
+    if (list.length > best) { best = list.length; dominantFamily = fam; }
+  }
+
+  // Piedra representativa: la más repetida dentro de la familia dominante.
+  const inFamily = familyCount.get(dominantFamily) ?? [];
+  const stoneCount = new Map<string, number>();
+  for (const r of inFamily) stoneCount.set(r.stone, (stoneCount.get(r.stone) ?? 0) + 1);
+  let dominantStone = inFamily[0]?.stone ?? "Cuarzo";
+  let bestStone = 0;
+  for (const [name, n] of stoneCount) {
+    if (n > bestStone) { bestStone = n; dominantStone = name; }
+  }
+
+  // Una fila por EJE para el dossier: la lectura representativa (la que cae en la
+  // familia dominante si existe; si no, la primera). Así "X de Y" == filas marcadas.
+  const disciplines: DisciplineStone[] = axes.map((a) => {
+    const rep = a.readings.find((r) => r.family === dominantFamily) ?? a.readings[0];
+    const corroborated = a.readings.length > 1 && a.readings.every((r) => r.family === rep.family);
+    return {
+      discipline: corroborated ? `${rep.discipline} (+ corrobora otra tradición)` : rep.discipline,
+      stone: rep.stone,
+      family: rep.family,
+      reason: rep.reason,
+      source: rep.source,
+    };
+  });
+
+  // CONVERGENCIA: por ejes independientes. Un eje coincide si alguna de sus
+  // lecturas cae en la familia dominante.
+  const total = axes.length;
+  const agreeing = axes.filter((a) => a.readings.some((r) => r.family === dominantFamily));
+  const agreement = agreeing.length;
+  const strength: ConvergenceResult["strength"] =
+    agreement >= 3 ? "alta" : agreement === 2 ? "media" : "baja";
+
+  return {
+    disciplines,
+    total,
+    dominantFamily,
+    dominantStone,
+    agreement,
+    agreeingDisciplines: disciplines.filter((d) => d.family === dominantFamily).map((d) => d.discipline),
+    strength,
+  };
+}
+
 /* ================================================================
    LUGARES DE PODER — conectado a astrocartografía
    ================================================================ */
@@ -426,8 +667,8 @@ export function getTotemProfile(
 
   // Cuerpo
   const cuerpo: TotemLayer = {
-    id: `sello-${kinData.sealIndex}`,
-    label: `Sello ${sealData.name} · Kin ${kinData.kin}`,
+    id: `nahual-${kinData.sealIndex}`,
+    label: `Nahual ${sealData.name} · tono ${kinData.tone} ${kinData.toneName}`,
     symbol: kinData.glyph,
     animal: sealData.animal,
     description: sealData.description,
@@ -465,8 +706,8 @@ export function getTotemProfile(
     intention: { name: archetypeStone.name, reason: `Arquetipo ${archetype}. ${archetypeStone.properties}`, source: archetypeStone.sourceSystem },
   };
 
-  // Si las tres piedras coinciden o son de la misma familia → "convergencia"
-  // (útil para el copy del dossier)
+  // Triangulación entre disciplinas independientes → piedra del box
+  const convergence = computeConvergence(sign, chinese.key, kinData.sealIndex, month);
 
   const narrative = [
     `Tótem de Identidad — ${archData.animal} ${zodiacData.symbol}`,
@@ -492,6 +733,7 @@ export function getTotemProfile(
     frente,
     corona,
     stone,
+    convergence,
     sacredPlace: {
       type: sacredData.type,
       examples: sacredData.examples,
@@ -505,5 +747,5 @@ export function getTotemProfile(
    EXPORTACIONES ADICIONALES para uso en dossier / UI
    ================================================================ */
 
-export { ZODIAC_TOTEM, SEAL_TOTEM, BIRTHSTONES_BY_MONTH, ZODIAC_STONES, ARCHETYPE_STONES };
+export { ZODIAC_TOTEM, SEAL_TOTEM, BIRTHSTONES_BY_MONTH, ZODIAC_STONES, ARCHETYPE_STONES, PLANETARY_STONES, CHINESE_STONES, NAHUAL_STONES };
 export type { ZodiacTotemData, SealTotemData, ArchetypeTotemData, StoneData, SacredPlaceData };

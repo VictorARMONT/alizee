@@ -4,13 +4,14 @@
  * El Cholq'ij es el calendario sagrado de 260 días usado por los pueblos
  * Maya K'iche' de Guatemala y sur de México. 20 nahuales × 13 tonos = 260 días.
  *
- * CÁLCULO: El índice de nahual (0-19) es idéntico al índice de sello Tzolkin
- * en birthProfile.ts — el mismo ciclo de 260 días, distinta tradición de nombres.
+ * CÁLCULO: El índice de nahual (0-19) viene de `getKinMaya().sealIndex` en
+ * birthProfile.ts, que ahora usa el conteo Tzolk'in AUTÉNTICO (correlación GMT
+ * 584283), no Dreamspell. Mismo ciclo de 260 días, nombres en K'iche'.
  *
  * Fuentes:
- *   - Instituto de Lingüística de Guatemala (ALMG)
+ *   - Instituto de Lingüística / Academia de Lenguas Mayas de Guatemala (ALMG)
+ *   - Barbara Tedlock, "Time and the Highland Maya" (1992) — daykeepers K'iche'
  *   - Cosmología Maya K'iche' (Ajq'ijab' — guías espirituales mayas)
- *   - "El libro del destino" — Heriberto García Rivas
  */
 
 export interface NahualData {
